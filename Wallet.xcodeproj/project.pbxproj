@@ -96,6 +96,7 @@
 		A0E47F042DF731D6009DEDB8 /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				A0E47F312DF7323B009DEDB8 /* Models */,
 				A0E47F052DF731D6009DEDB8 /* WalletApp.swift */,
 				A0E47F072DF731D6009DEDB8 /* ContentView.swift */,
 				A0E47F092DF731D6009DEDB8 /* Item.swift */,
@@ -128,6 +129,13 @@
 				A0E47F242DF731D9009DEDB8 /* WalletUITestsLaunchTests.swift */,
 			);
 			path = WalletUITests;
+			sourceTree = "<group>";
+		};
+		A0E47F312DF7323B009DEDB8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
