@@ -19,6 +19,7 @@
 		A0E47F352DF73473009DEDB8 /* BankAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F342DF73473009DEDB8 /* BankAccount.swift */; };
 		A0E47F372DF7352B009DEDB8 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F362DF7352B009DEDB8 /* Transaction.swift */; };
 		A0E47F3A2DF73666009DEDB8 /* Extension+Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */; };
+		A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		A0E47F342DF73473009DEDB8 /* BankAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankAccount.swift; sourceTree = "<group>"; };
 		A0E47F362DF7352B009DEDB8 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Transaction.swift"; sourceTree = "<group>"; };
+		A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsFileCache.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 		A0E47F042DF731D6009DEDB8 /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				A0E47F3B2DF740D6009DEDB8 /* Services */,
 				A0E47F382DF73657009DEDB8 /* Extentions */,
 				A0E47F312DF7323B009DEDB8 /* Models */,
 				A0E47F052DF731D6009DEDB8 /* WalletApp.swift */,
@@ -156,6 +159,14 @@
 				A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */,
 			);
 			path = Extentions;
+			sourceTree = "<group>";
+		};
+		A0E47F3B2DF740D6009DEDB8 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -291,6 +302,7 @@
 				A0E47F082DF731D6009DEDB8 /* ContentView.swift in Sources */,
 				A0E47F0A2DF731D6009DEDB8 /* Item.swift in Sources */,
 				A0E47F3A2DF73666009DEDB8 /* Extension+Transaction.swift in Sources */,
+				A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */,
 				A0E47F372DF7352B009DEDB8 /* Transaction.swift in Sources */,
 				A0E47F352DF73473009DEDB8 /* BankAccount.swift in Sources */,
 				A0E47F062DF731D6009DEDB8 /* WalletApp.swift in Sources */,
