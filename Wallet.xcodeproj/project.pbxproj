@@ -20,6 +20,13 @@
 		A0E47F372DF7352B009DEDB8 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F362DF7352B009DEDB8 /* Transaction.swift */; };
 		A0E47F3A2DF73666009DEDB8 /* Extension+Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */; };
 		A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */; };
+		A0EF98CF2DF8831D009B4A76 /* CategoriesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98CE2DF8831D009B4A76 /* CategoriesService.swift */; };
+		A0EF98D12DF8D8B6009B4A76 /* BankAccountsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98D02DF8D8B6009B4A76 /* BankAccountsService.swift */; };
+		A0EF98D32DF8DDBE009B4A76 /* TransactionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98D22DF8DDBE009B4A76 /* TransactionsService.swift */; };
+		A0EF98D52DF9F6BD009B4A76 /* Extension+TransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98D42DF9F6BD009B4A76 /* Extension+TransactionRequest.swift */; };
+		A0EF98D72DF9F765009B4A76 /* TransactionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98D62DF9F765009B4A76 /* TransactionRequest.swift */; };
+		A0EF98D92DFA18A0009B4A76 /* AccountBrief.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98D82DFA18A0009B4A76 /* AccountBrief.swift */; };
+		A0EF98DB2DFA1930009B4A76 /* Extension+AccountBrief.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EF98DA2DFA1930009B4A76 /* Extension+AccountBrief.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +63,13 @@
 		A0E47F362DF7352B009DEDB8 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+Transaction.swift"; sourceTree = "<group>"; };
 		A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsFileCache.swift; sourceTree = "<group>"; };
+		A0EF98CE2DF8831D009B4A76 /* CategoriesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesService.swift; sourceTree = "<group>"; };
+		A0EF98D02DF8D8B6009B4A76 /* BankAccountsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankAccountsService.swift; sourceTree = "<group>"; };
+		A0EF98D22DF8DDBE009B4A76 /* TransactionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsService.swift; sourceTree = "<group>"; };
+		A0EF98D42DF9F6BD009B4A76 /* Extension+TransactionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+TransactionRequest.swift"; sourceTree = "<group>"; };
+		A0EF98D62DF9F765009B4A76 /* TransactionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRequest.swift; sourceTree = "<group>"; };
+		A0EF98D82DFA18A0009B4A76 /* AccountBrief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBrief.swift; sourceTree = "<group>"; };
+		A0EF98DA2DFA1930009B4A76 /* Extension+AccountBrief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+AccountBrief.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +163,8 @@
 				A0E47F322DF732D1009DEDB8 /* Category.swift */,
 				A0E47F342DF73473009DEDB8 /* BankAccount.swift */,
 				A0E47F362DF7352B009DEDB8 /* Transaction.swift */,
+				A0EF98D62DF9F765009B4A76 /* TransactionRequest.swift */,
+				A0EF98D82DFA18A0009B4A76 /* AccountBrief.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -157,6 +173,8 @@
 			isa = PBXGroup;
 			children = (
 				A0E47F392DF73666009DEDB8 /* Extension+Transaction.swift */,
+				A0EF98D42DF9F6BD009B4A76 /* Extension+TransactionRequest.swift */,
+				A0EF98DA2DFA1930009B4A76 /* Extension+AccountBrief.swift */,
 			);
 			path = Extentions;
 			sourceTree = "<group>";
@@ -165,6 +183,9 @@
 			isa = PBXGroup;
 			children = (
 				A0E47F3C2DF740E7009DEDB8 /* TransactionsFileCache.swift */,
+				A0EF98CE2DF8831D009B4A76 /* CategoriesService.swift */,
+				A0EF98D02DF8D8B6009B4A76 /* BankAccountsService.swift */,
+				A0EF98D22DF8DDBE009B4A76 /* TransactionsService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -302,11 +323,18 @@
 				A0E47F082DF731D6009DEDB8 /* ContentView.swift in Sources */,
 				A0E47F0A2DF731D6009DEDB8 /* Item.swift in Sources */,
 				A0E47F3A2DF73666009DEDB8 /* Extension+Transaction.swift in Sources */,
+				A0EF98D72DF9F765009B4A76 /* TransactionRequest.swift in Sources */,
+				A0EF98D12DF8D8B6009B4A76 /* BankAccountsService.swift in Sources */,
 				A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */,
+				A0EF98D92DFA18A0009B4A76 /* AccountBrief.swift in Sources */,
 				A0E47F372DF7352B009DEDB8 /* Transaction.swift in Sources */,
 				A0E47F352DF73473009DEDB8 /* BankAccount.swift in Sources */,
 				A0E47F062DF731D6009DEDB8 /* WalletApp.swift in Sources */,
+				A0EF98D52DF9F6BD009B4A76 /* Extension+TransactionRequest.swift in Sources */,
+				A0EF98DB2DFA1930009B4A76 /* Extension+AccountBrief.swift in Sources */,
 				A0E47F332DF732D1009DEDB8 /* Category.swift in Sources */,
+				A0EF98D32DF8DDBE009B4A76 /* TransactionsService.swift in Sources */,
+				A0EF98CF2DF8831D009B4A76 /* CategoriesService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
