@@ -15,14 +15,6 @@ final class TransactionsService {
     
     init() {
         
-//        self.categories = [
-//            Category(id: 0, name: "Дом", emoji: "🏠", isIncome: false),
-//            Category(id: 1, name: "Машина", emoji: "🚘", isIncome: false),
-//            Category(id: 2, name: "Продукты", emoji: "🥯", isIncome: false),
-//            Category(id: 3, name: "Зарплата", emoji: "💵", isIncome: true),
-//            Category(id: 3, name: "Ставки", emoji: "🎰", isIncome: true),
-//        ]
-        
         self.transactions = [
             Transaction(id: 0, account: accounts[0], category: categories[0], amount: 1000, transactionDate: Date.now, comment: "отопление", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 1, account: accounts[0], category: categories[1], amount: 1000, transactionDate: Date.now, comment: "бенизн", createdAt: Date.now, updatedAt: Date.now),
@@ -32,7 +24,7 @@ final class TransactionsService {
     }
     
     
-    //содержит асинхронный метод для получения списка операций за период
+    //MARK: - Aсинхронный метод для получения списка операций за период
     func getTransactionsByPeriod(accountId: Int, startDate: String, endDate: String) async throws -> [Transaction] {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withYear, .withMonth, .withDay]
@@ -50,7 +42,7 @@ final class TransactionsService {
         
         return transactions.filter { $0.createdAt >= startDateFormatted && $0.createdAt <= endDateFormatted}
     }
-    //содержит асинхронный метод для создания транзакции
+    //MARK: - Aсинхронный метод для создания транзакции
     func createTransaction(from request: TransactionRequest) async throws {
         let selectedCategory = categories[request.categoryId]
         
@@ -60,10 +52,19 @@ final class TransactionsService {
         
         
         //ВОПРОС: - Какую дату ставить в createdAt и updatedAt ????
-        let newTransaction = Transaction(id: transactions.count, account: accounts[accountIndex], category: selectedCategory, amount: request.amount, transactionDate: request.transactionDate, comment: request.comment, createdAt: Date.now, updatedAt: Date.now)
+        let newTransaction = Transaction(
+            id: transactions.count,
+            account: accounts[accountIndex],
+            category: selectedCategory,
+            amount: request.amount,
+            transactionDate: request.transactionDate,
+            comment: request.comment,
+            createdAt: Date.now,
+            updatedAt: Date.now
+        )
     }
     
-    //содержит асинхронный метод для редактирования транзакции
+    //MARK: - Aсинхронный метод для редактирования транзакции
     func editTransaction(of id: Int, accountId: Int, categoryId: Int, amount: Decimal, transactionDate: String, comment: String) async throws {
         let index = transactions.firstIndex(where: { $0.id == id })
         
@@ -74,9 +75,18 @@ final class TransactionsService {
             return
         }
         
-        let updatedTransaction = Transaction(id: id, account: accounts[accountId], category: categories[categoryId], amount: amount, transactionDate: transactionDateFormatted, comment: comment, createdAt: Date.now, updatedAt: Date.now)
+        let updatedTransaction = Transaction(
+            id: id,
+            account: accounts[accountId],
+            category: categories[categoryId],
+            amount: amount,
+            transactionDate: transactionDateFormatted,
+            comment: comment,
+            createdAt: Date.now,
+            updatedAt: Date.now
+        )
     }
-    //содержит асинхронный метод для удаления транзакции
+    //MARK: - Aсинхронный метод для удаления транзакции
     func deleteTransaction(by id: Int) async throws {
         guard let index = transactions.firstIndex(where: { $0.id == id })  else {
             return
