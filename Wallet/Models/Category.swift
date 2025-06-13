@@ -22,7 +22,7 @@ struct Category: Codable, Equatable {
         
         let emojiString = try container.decode(String.self, forKey: .emoji)
         guard let firstChar = emojiString.first else {
-            throw DecodingError.dataCorruptedError(forKey: .emoji, in: container, debugDescription: "Emoji String in empty")
+            throw DecodingError.dataCorruptedError(forKey: .emoji, in: container, debugDescription: "Emoji String is empty")
         }
         self.emoji = firstChar
         

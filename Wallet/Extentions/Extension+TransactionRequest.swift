@@ -1,7 +1,6 @@
 import Foundation
 
 extension TransactionRequest {
-    
     //MARK: - создать extension TransactionRequest, который собирает TransactionRequest из Transaction
     init(from transaction: Transaction) {
         self.accountId = transaction.account.id

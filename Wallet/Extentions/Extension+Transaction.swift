@@ -45,32 +45,32 @@ extension Transaction {
         guard let category = dict["category"] as? Category else {
             return nil
         }
-              
+        
         guard let amountString = dict["amount"] as? String else {
             return nil
         }
         guard let amountDecimal = Decimal(string: amountString) else {
             return nil
         }
-              
+        
         guard let transactionDateString = dict["transactionDate"] as? String else {
             return nil
         }
         guard let transactionDate = formatter.date(from: transactionDateString) else {
             return nil
         }
-              
+        
         guard let comment = dict["comment"] as? String else {
             return nil
         }
-              
+        
         guard let createdAtString = dict["createdAt"] as? String else {
             return nil
         }
         guard let createdAt = formatter.date(from: createdAtString) else {
             return nil
         }
-              
+        
         guard let updatedAtString = dict["updatedAt"] as? String else {
             return nil
         }
@@ -154,7 +154,7 @@ extension Transaction {
             guard let updatedAt = formatter.date(from: column[13]) else {
                 throw CSVError.invalidUpdatedAt
             }
-                    
+            
             let transaction = Transaction(id: id, account: account, category: category, amount: amount, transactionDate: transactionDate, comment: comment, createdAt: createdAt, updatedAt: updatedAt)
             
             result.append(transaction)
