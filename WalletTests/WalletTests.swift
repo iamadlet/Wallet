@@ -1,10 +1,3 @@
-//
-//  WalletTests.swift
-//  WalletTests
-//
-//  Created by Адлет Жумагалиев on 09.06.2025.
-//
-
 import XCTest
 @testable import Wallet
 
