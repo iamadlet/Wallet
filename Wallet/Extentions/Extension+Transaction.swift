@@ -17,9 +17,9 @@ extension Transaction {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return [
             "id": self.id,
-            "accountId": self.account.id,
-            "categoryId": self.category.id,
-            "amount": NSDecimalNumber(decimal: amount).stringValue,
+            "account": self.account,
+            "category": self.category,
+            "amount": String(format: "%.2f", NSDecimalNumber(decimal: amount).doubleValue),
             "transactionDate": formatter.string(from: self.transactionDate),
             "comment": self.comment,
             "createdAt": formatter.string(from: self.createdAt),
@@ -33,29 +33,52 @@ extension Transaction {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
-        guard let dict = jsonObject as? [String: Any],
-              let id = dict["id"] as? Int,
-              let account = dict["account"] as? AccountBrief,
-              let category = dict["categoryId"] as? Category,
+        guard let dict = jsonObject as? [String: Any] else {
+            return nil
+        }
+        guard let id = dict["id"] as? Int else {
+            return nil
+        }
+        guard let account = dict["account"] as? AccountBrief else {
+            return nil
+        }
+        guard let category = dict["category"] as? Category else {
+            return nil
+        }
               
-              let amountString = dict["amount"] as? String,
-              let amountDecimal = Decimal(string: amountString),
+        guard let amountString = dict["amount"] as? String else {
+            return nil
+        }
+        guard let amountDecimal = Decimal(string: amountString) else {
+            return nil
+        }
               
-              let transactionDateString = dict["transactionDate"] as? String,
-              let transactionDate = formatter.date(from: transactionDateString),
+        guard let transactionDateString = dict["transactionDate"] as? String else {
+            return nil
+        }
+        guard let transactionDate = formatter.date(from: transactionDateString) else {
+            return nil
+        }
               
-              let comment = dict["comment"] as? String,
+        guard let comment = dict["comment"] as? String else {
+            return nil
+        }
               
-              let createdAtString = dict["createdAt"] as? String,
-              let createdAt = formatter.date(from: createdAtString),
+        guard let createdAtString = dict["createdAt"] as? String else {
+            return nil
+        }
+        guard let createdAt = formatter.date(from: createdAtString) else {
+            return nil
+        }
               
-              let updatedAtString = dict["updatedAt"] as? String,
-              let updatedAt = formatter.date(from: updatedAtString)
-        else {
+        guard let updatedAtString = dict["updatedAt"] as? String else {
+            return nil
+        }
+        guard let updatedAt = formatter.date(from: updatedAtString) else {
             return nil
         }
         
-        let transaction = Transaction(
+        let transaction: Transaction? = Transaction(
             id: id,
             account: account,
             category: category,

@@ -30,24 +30,24 @@ final class TransactionsService {
         formatter.formatOptions = [.withYear, .withMonth, .withDay]
         
         guard let startDateFormatted = formatter.date(from: startDate) else {
-            return []
+            throw NetworkError.invalidDate
         }
         guard let endDateFormatted = formatter.date(from: endDate) else {
-            return []
+            throw NetworkError.invalidDate
         }
         
         guard startDateFormatted > endDateFormatted else {
-            return []
+            throw NetworkError.startDateIsLaterThanEndDate
         }
         
         return transactions.filter { $0.createdAt >= startDateFormatted && $0.createdAt <= endDateFormatted}
     }
     //MARK: - Aсинхронный метод для создания транзакции
-    func createTransaction(from request: TransactionRequest) async throws {
+    func createTransaction(from request: TransactionRequest) async throws -> Transaction {
         let selectedCategory = categories[request.categoryId]
         
         guard let accountIndex = accounts.firstIndex(where: { $0.id == request.accountId }) else {
-            return
+            throw NetworkError.transactionIdAlreadyExists
         }
         
         
@@ -62,17 +62,20 @@ final class TransactionsService {
             createdAt: Date.now,
             updatedAt: Date.now
         )
+        return newTransaction
     }
     
     //MARK: - Aсинхронный метод для редактирования транзакции
-    func editTransaction(of id: Int, accountId: Int, categoryId: Int, amount: Decimal, transactionDate: String, comment: String) async throws {
-        let index = transactions.firstIndex(where: { $0.id == id })
+    func editTransaction(of id: Int, accountId: Int, categoryId: Int, amount: Decimal, transactionDate: String, comment: String) async throws -> Transaction {
+        guard let index = transactions.firstIndex(where: { $0.id == id }) else {
+            throw NetworkError.invalidId
+        }
         
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
         guard let transactionDateFormatted = formatter.date(from: transactionDate) else {
-            return
+            throw NetworkError.invalidDate
         }
         
         let updatedTransaction = Transaction(
@@ -85,12 +88,25 @@ final class TransactionsService {
             createdAt: Date.now,
             updatedAt: Date.now
         )
+        transactions[index] = updatedTransaction
+        return updatedTransaction
     }
     //MARK: - Aсинхронный метод для удаления транзакции
-    func deleteTransaction(by id: Int) async throws {
+    func deleteTransaction(by id: Int) async throws -> Transaction {
         guard let index = transactions.firstIndex(where: { $0.id == id })  else {
-            return
+            throw NetworkError.invalidId
         }
         let deletedTransaction = transactions.remove(at: index)
+        return deletedTransaction
     }
+    
+    
+}
+
+
+enum NetworkError: Error {
+    case invalidId
+    case invalidDate
+    case transactionIdAlreadyExists
+    case startDateIsLaterThanEndDate
 }

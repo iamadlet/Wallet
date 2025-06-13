@@ -1,7 +1,7 @@
 import Foundation
 
 
-struct Category: Codable {
+struct Category: Codable, Equatable {
     let id: Int
     let name: String
     let emoji: Character
