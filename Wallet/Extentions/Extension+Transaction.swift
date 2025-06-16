@@ -2,15 +2,6 @@ import Foundation
 
 extension Transaction {
     
-    //MARK: - Создать Transaction из TransactionRequest
-    //    init(from transactionRequest: TransactionRequest) {
-    //        self.account = transactionRequest.accountId
-    //        self.categoryId = transactionRequest.category.id
-    //        self.amount = transactionRequest.amount
-    //        self.transactionDate = transactionRe.transactionDate
-    //        self.comment = transaction.comment
-    //    }
-    
     //MARK: - Computed property из Foundation объекта в jsonObject
     var jsonObject: Any {
         let formatter = ISO8601DateFormatter()

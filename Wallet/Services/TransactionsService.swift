@@ -6,7 +6,7 @@ final class TransactionsService {
         Category(id: 1, name: "Машина", emoji: "🚘", isIncome: false),
         Category(id: 2, name: "Продукты", emoji: "🥯", isIncome: false),
         Category(id: 3, name: "Зарплата", emoji: "💵", isIncome: true),
-        Category(id: 3, name: "Ставки", emoji: "🎰", isIncome: true),
+        Category(id: 4, name: "Ставки", emoji: "🎰", isIncome: true),
     ]
     
     var transactions: [Transaction]
@@ -17,7 +17,7 @@ final class TransactionsService {
         
         self.transactions = [
             Transaction(id: 0, account: accounts[0], category: categories[0], amount: 1000, transactionDate: Date.now, comment: "отопление", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 1, account: accounts[0], category: categories[1], amount: 1000, transactionDate: Date.now, comment: "бенизн", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 1, account: accounts[0], category: categories[1], amount: 1000, transactionDate: Date.now, comment: "бензин", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 2, account: accounts[0], category: categories[2], amount: 1000, transactionDate: Date.now, comment: "макароны", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 3, account: accounts[0], category: categories[3], amount: 10000, transactionDate: Date.now, comment: "all in на красное", createdAt: Date.now, updatedAt: Date.now)
         ]
@@ -36,7 +36,7 @@ final class TransactionsService {
             throw NetworkError.invalidDate
         }
         
-        guard startDateFormatted > endDateFormatted else {
+        guard startDateFormatted < endDateFormatted else {
             throw NetworkError.startDateIsLaterThanEndDate
         }
         
@@ -44,6 +44,9 @@ final class TransactionsService {
     }
     //MARK: - Aсинхронный метод для создания транзакции
     func createTransaction(from request: TransactionRequest) async throws -> Transaction {
+        let maxId = transactions.map(\.id).max() ?? 0
+        let newId = maxId + 1
+        
         let selectedCategory = categories[request.categoryId]
         
         guard let accountIndex = accounts.firstIndex(where: { $0.id == request.accountId }) else {
@@ -53,7 +56,7 @@ final class TransactionsService {
         
         //ВОПРОС: - Какую дату ставить в createdAt и updatedAt ????
         let newTransaction = Transaction(
-            id: transactions.count,
+            id: newId,
             account: accounts[accountIndex],
             category: selectedCategory,
             amount: request.amount,
