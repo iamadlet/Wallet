@@ -19,16 +19,12 @@ class TransactionsFileCache {
     }
     
     //TODO: Сохранение всех операций в файл в формате JSON
-    public func save(to filename: String) {
+    public func save(to filename: String) throws {
         let array: [Any] = transactions.map { $0.jsonObject }
-        
-        do {
-            let data = try JSONSerialization.data(withJSONObject: array, options: [.prettyPrinted])
-            let url = getURL(for: filename)
-            try data.write(to: url)
-        } catch {
-            print("Ошибка при сохранении: \(error)")
-        }
+
+        let data = try JSONSerialization.data(withJSONObject: array, options: [.prettyPrinted])
+        let url = getURL(for: filename)
+        try data.write(to: url)
     }
     
     private func getURL(for filename: String) -> URL {
@@ -37,18 +33,14 @@ class TransactionsFileCache {
     }
     
     //TODO: Загрузка всех операций из файла в формате JSON
-    public func load(from filename: String) {
+    public func load(from filename: String) throws {
         let url = getURL(for: filename)
         
-        do {
-            let data = try Data(contentsOf: url)
-            
-            let rawArray = try JSONSerialization.jsonObject(with: data) as? [Any] ?? []
-            
-            transactions = rawArray.compactMap { Transaction.parse(jsonObject: $0) }
-        } catch {
-            print("Ошибка при загрузке: \(error)")
-        }
+        let data = try Data(contentsOf: url)
+        
+        let rawArray = try JSONSerialization.jsonObject(with: data) as? [Any] ?? []
+        
+        transactions = rawArray.compactMap { Transaction.parse(jsonObject: $0) }
     }
     
     

@@ -6,7 +6,7 @@ final class TransactionsService {
         Category(id: 1, name: "Машина", emoji: "🚘", isIncome: false),
         Category(id: 2, name: "Продукты", emoji: "🥯", isIncome: false),
         Category(id: 3, name: "Зарплата", emoji: "💵", isIncome: true),
-        Category(id: 3, name: "Ставки", emoji: "🎰", isIncome: true),
+        Category(id: 4, name: "Ставки", emoji: "🎰", isIncome: true),
     ]
     
     var transactions: [Transaction]
@@ -36,7 +36,7 @@ final class TransactionsService {
             throw NetworkError.invalidDate
         }
         
-        guard startDateFormatted > endDateFormatted else {
+        guard startDateFormatted <= endDateFormatted else {
             throw NetworkError.startDateIsLaterThanEndDate
         }
         
@@ -50,10 +50,12 @@ final class TransactionsService {
             throw NetworkError.transactionIdAlreadyExists
         }
         
+        let maxId = transactions.map(\.id).max() ?? 0
+        let newId = maxId + 1
         
         //ВОПРОС: - Какую дату ставить в createdAt и updatedAt ????
         let newTransaction = Transaction(
-            id: transactions.count,
+            id: newId,
             account: accounts[accountIndex],
             category: selectedCategory,
             amount: request.amount,
