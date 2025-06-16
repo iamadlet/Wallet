@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A0DC48BC2E00C22600D05378 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DC48BB2E00C22600D05378 /* MainView.swift */; };
+		A0DC48BE2E00C32A00D05378 /* ProfitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DC48BD2E00C32A00D05378 /* ProfitsView.swift */; };
 		A0E47F062DF731D6009DEDB8 /* WalletApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F052DF731D6009DEDB8 /* WalletApp.swift */; };
-		A0E47F082DF731D6009DEDB8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F072DF731D6009DEDB8 /* ContentView.swift */; };
 		A0E47F0A2DF731D6009DEDB8 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E47F092DF731D6009DEDB8 /* Item.swift */; };
 		A0E47F0C2DF731D9009DEDB8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0E47F0B2DF731D9009DEDB8 /* Assets.xcassets */; };
 		A0E47F0F2DF731D9009DEDB8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0E47F0E2DF731D9009DEDB8 /* Preview Assets.xcassets */; };
@@ -48,9 +49,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A0DC48BB2E00C22600D05378 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		A0DC48BD2E00C32A00D05378 /* ProfitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfitsView.swift; sourceTree = "<group>"; };
 		A0E47F022DF731D6009DEDB8 /* Wallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0E47F052DF731D6009DEDB8 /* WalletApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletApp.swift; sourceTree = "<group>"; };
-		A0E47F072DF731D6009DEDB8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A0E47F092DF731D6009DEDB8 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		A0E47F0B2DF731D9009DEDB8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A0E47F0E2DF731D9009DEDB8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -99,6 +101,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A0DC48B82E00C1F300D05378 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A0DC48BB2E00C22600D05378 /* MainView.swift */,
+				A0DC48BD2E00C32A00D05378 /* ProfitsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		A0E47EF92DF731D6009DEDB8 = {
 			isa = PBXGroup;
 			children = (
@@ -122,11 +133,11 @@
 		A0E47F042DF731D6009DEDB8 /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				A0DC48B82E00C1F300D05378 /* Views */,
 				A0E47F3B2DF740D6009DEDB8 /* Services */,
 				A0E47F382DF73657009DEDB8 /* Extentions */,
 				A0E47F312DF7323B009DEDB8 /* Models */,
 				A0E47F052DF731D6009DEDB8 /* WalletApp.swift */,
-				A0E47F072DF731D6009DEDB8 /* ContentView.swift */,
 				A0E47F092DF731D6009DEDB8 /* Item.swift */,
 				A0E47F0B2DF731D9009DEDB8 /* Assets.xcassets */,
 				A0E47F0D2DF731D9009DEDB8 /* Preview Content */,
@@ -323,16 +334,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0E47F082DF731D6009DEDB8 /* ContentView.swift in Sources */,
 				A0E47F0A2DF731D6009DEDB8 /* Item.swift in Sources */,
 				A0E47F3A2DF73666009DEDB8 /* Extension+Transaction.swift in Sources */,
 				A0EF98D72DF9F765009B4A76 /* TransactionRequest.swift in Sources */,
 				A0EF98D12DF8D8B6009B4A76 /* BankAccountsService.swift in Sources */,
 				A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */,
 				A0EF98D92DFA18A0009B4A76 /* AccountBrief.swift in Sources */,
+				A0DC48BE2E00C32A00D05378 /* ProfitsView.swift in Sources */,
 				A0E47F372DF7352B009DEDB8 /* Transaction.swift in Sources */,
 				A0E47F352DF73473009DEDB8 /* BankAccount.swift in Sources */,
 				A0E47F062DF731D6009DEDB8 /* WalletApp.swift in Sources */,
+				A0DC48BC2E00C22600D05378 /* MainView.swift in Sources */,
 				A0EF98D52DF9F6BD009B4A76 /* Extension+TransactionRequest.swift in Sources */,
 				A0EF98DB2DFA1930009B4A76 /* Extension+AccountBrief.swift in Sources */,
 				A0E47F332DF732D1009DEDB8 /* Category.swift in Sources */,
