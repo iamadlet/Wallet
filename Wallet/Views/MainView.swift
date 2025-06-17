@@ -3,29 +3,34 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            EmptyView()
+            OutcomesView()
                 .tabItem {
-                    Label("Расходы", systemImage: "star")
+                    Text("Расходы")
+                    Image("OutcomesLogo")
                 }
             
-            EmptyView()
+            IncomesView()
                 .tabItem {
-                    Label("Доходы", systemImage: "star")
+                    Text("Доходы")
+                    Image("IncomesLogo")
                 }
             
-            EmptyView()
+            BankAccountView()
                 .tabItem {
-                    Label("Счет", systemImage: "star")
+                    Text("Счет")
+                    Image("AccountLogo")
                 }
             
-            EmptyView()
+            CategoriesView()
                 .tabItem {
-                    Label("Статьи", systemImage: "star")
+                    Text("Статьи")
+                    Image("CategoriesLogo")
                 }
             
-            EmptyView()
+            SettingsView()
                 .tabItem {
-                    Label("Настройки", systemImage: "star")
+                    Text("Настройки")
+                    Image("SettingsLogo")
                 }
         }
     }
