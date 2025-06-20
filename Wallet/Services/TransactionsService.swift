@@ -34,11 +34,7 @@ final class TransactionsService {
             Transaction(id: 8, account: accounts[0], category: categories[1], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 9, account: accounts[0], category: categories[8], amount: 5000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 10, account: accounts[0], category: categories[3], amount: 100000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 11, account: accounts[0], category: categories[11], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 0, account: accounts[0], category: categories[0], amount: 1000, transactionDate: Date.now, comment: "отопление", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 1, account: accounts[0], category: categories[1], amount: 1000, transactionDate: Date.now, comment: "бензин", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 2, account: accounts[0], category: categories[2], amount: 1000, transactionDate: Date.now, comment: "макароны", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 3, account: accounts[0], category: categories[3], amount: 10000, transactionDate: Date.now, comment: "all in на красное", createdAt: Date.now, updatedAt: Date.now)
+            Transaction(id: 11, account: accounts[0], category: categories[11], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now)
         ]
     }
     
