@@ -1,25 +1,39 @@
 import Foundation
 
-final class TransactionsService {
+final class TransactionsService: ObservableObject {
     let categories: [Category] = [
-        Category(id: 0, name: "Дом", emoji: "🏠", isIncome: false),
+        Category(id: 0, name: "Аренда квартиры", emoji: "🏠", isIncome: false),
         Category(id: 1, name: "Машина", emoji: "🚘", isIncome: false),
-        Category(id: 2, name: "Продукты", emoji: "🥯", isIncome: false),
+        Category(id: 2, name: "Продукты", emoji: "🍬", isIncome: false),
         Category(id: 3, name: "Зарплата", emoji: "💵", isIncome: true),
-        Category(id: 3, name: "Ставки", emoji: "🎰", isIncome: true),
+        Category(id: 4, name: "На собачку", emoji: "🐕", isIncome: false),
+        Category(id: 5, name: "Одежда", emoji: "👔", isIncome: false),
+        Category(id: 6, name: "Ремонт квартиры", emoji: "🔨", isIncome: false),
+        Category(id: 7, name: "Спортзал", emoji: "🏋️‍♂️", isIncome: false),
+        Category(id: 8, name: "Рестораны", emoji: "🍽️", isIncome: false),
+        Category(id: 9, name: "Аптека", emoji: "💜", isIncome: false),
+        Category(id: 10, name: "Медицина", emoji: "💊", isIncome: false),
+        Category(id: 11, name: "Подработка", emoji: "💵", isIncome: true),
     ]
     
-    var transactions: [Transaction]
-    
+    @Published var transactions: [Transaction]
     let accounts: [AccountBrief] = [AccountBrief(id: 0, name: "Adlet", balance: 100000, currency: "RUB")]
     
     init() {
         
         self.transactions = [
-            Transaction(id: 0, account: accounts[0], category: categories[0], amount: 1000, transactionDate: Date.now, comment: "отопление", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 1, account: accounts[0], category: categories[1], amount: 1000, transactionDate: Date.now, comment: "бенизн", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 2, account: accounts[0], category: categories[2], amount: 1000, transactionDate: Date.now, comment: "макароны", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 3, account: accounts[0], category: categories[3], amount: 10000, transactionDate: Date.now, comment: "all in на красное", createdAt: Date.now, updatedAt: Date.now)
+            Transaction(id: 0, account: accounts[0], category: categories[0], amount: 100000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 1, account: accounts[0], category: categories[5], amount: 7500, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 2, account: accounts[0], category: categories[4], amount: 2500, transactionDate: Date.now, comment: "Джек", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 3, account: accounts[0], category: categories[4], amount: 4800, transactionDate: Date.now, comment: "Энни", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 4, account: accounts[0], category: categories[6], amount: 100000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 5, account: accounts[0], category: categories[7], amount: 3223, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 6, account: accounts[0], category: categories[9], amount: 10000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 7, account: accounts[0], category: categories[10], amount: 25000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 8, account: accounts[0], category: categories[1], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 9, account: accounts[0], category: categories[8], amount: 5000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 10, account: accounts[0], category: categories[3], amount: 100000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 11, account: accounts[0], category: categories[11], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
         ]
     }
     
@@ -100,13 +114,70 @@ final class TransactionsService {
         return deletedTransaction
     }
     
+    //MARK: - Метод для фильтрации транзакций по доходу/расходу
+    func getTransactions(by direction: Direction, from start: Date, until end: Date, sortedBy type: SortType) -> [Transaction] {
+        let calendar = Calendar.current
+        
+        let startDate = calendar.startOfDay(for: start)
+        guard let end = calendar.date(
+            bySettingHour: 23,
+            minute: 59,
+            second: 59,
+            of: end
+        ) else {
+            return []
+        }
+        let filtered = self.transactions.filter
+            {
+                $0.category.direction == direction &&
+                $0.transactionDate >= startDate &&
+                $0.transactionDate <= end
+            }
+        
+        return sort(transactions: filtered, by: type)
+    }
     
+    //MARK: - Метод для нахождения суммы транзакций по доходу/расходу
+    func sumTransactionsAmount(by direction: Direction, from start: Date, until end: Date) -> Decimal {
+        let transactionsByDirection = getTransactions(by: direction, from: start, until: end, sortedBy: .amountAscending)
+        let sum = transactionsByDirection.reduce(0, {x, y in
+            x + y.amount
+        })
+        return sum
+    }
+    
+    //TODO: в будущем заменить символ рубля на enum, и в зависимости от настроек юзера уже форматировать. Пока только рубль )0))0)
+    func formatAmount(_ amount: Decimal) -> String {
+        
+        return "\(amount) ₽"
+    }
+    
+    func sort(transactions: [Transaction],by type: SortType) -> [Transaction] {
+        switch type {
+        case .dateAscending:
+            return transactions.sorted { $0.transactionDate < $1.transactionDate }
+        case .dateDescending:
+            return transactions.sorted { $0.transactionDate > $1.transactionDate }
+        case .amountAscending:
+            return transactions.sorted { $0.amount < $1.amount }
+        case .amountDescending:
+            return transactions.sorted { $0.amount > $1.amount }
+        }
+    }
 }
-
 
 enum NetworkError: Error {
     case invalidId
     case invalidDate
     case transactionIdAlreadyExists
     case startDateIsLaterThanEndDate
+}
+
+enum SortType: String, CaseIterable, Identifiable {
+    case dateAscending = "Сначала старые"
+    case dateDescending = "Сначала новые"
+    case amountAscending = "По возрастанию"
+    case amountDescending = "По убыванию"
+    
+    var id: String { rawValue }
 }

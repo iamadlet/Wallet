@@ -7,6 +7,6 @@ extension TransactionRequest {
         self.categoryId = transaction.category.id
         self.amount = transaction.amount
         self.transactionDate = transaction.transactionDate
-        self.comment = transaction.comment
+        self.comment = transaction.comment ?? ""
     }
 }

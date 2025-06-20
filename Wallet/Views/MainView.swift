@@ -3,13 +3,13 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
-            OutcomesView()
+            TransactionsListView(direction: .outcome)
                 .tabItem {
                     Text("Расходы")
                     Image("OutcomesLogo")
                 }
             
-            IncomesView()
+            TransactionsListView(direction: .income)
                 .tabItem {
                     Text("Доходы")
                     Image("IncomesLogo")
