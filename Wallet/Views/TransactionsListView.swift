@@ -43,7 +43,15 @@ struct TransactionsListView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle(direction == .income ? "Доходы сегодня": "Расходы сегодня")
-            
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        HistoryView(direction: direction)
+                    } label: {
+                        Image("History")
+                    }
+                }
+            }
         }
     }
 }
