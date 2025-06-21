@@ -33,7 +33,7 @@ final class TransactionsService: ObservableObject {
             Transaction(id: 8, account: accounts[0], category: categories[1], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 9, account: accounts[0], category: categories[8], amount: 5000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
             Transaction(id: 10, account: accounts[0], category: categories[3], amount: 100000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
-            Transaction(id: 11, account: accounts[0], category: categories[11], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now),
+            Transaction(id: 11, account: accounts[0], category: categories[11], amount: 60000, transactionDate: Date.now, comment: "", createdAt: Date.now, updatedAt: Date.now)
         ]
     }
     
