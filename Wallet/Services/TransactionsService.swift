@@ -1,10 +1,10 @@
 import Foundation
 
-final class TransactionsService {
+final class TransactionsService: ObservableObject {
     let categories: [Category] = [
-        Category(id: 0, name: "Дом", emoji: "🏠", isIncome: false),
+        Category(id: 0, name: "Аренда квартиры", emoji: "🏠", isIncome: false),
         Category(id: 1, name: "Машина", emoji: "🚘", isIncome: false),
-        Category(id: 2, name: "Продукты", emoji: "🥯", isIncome: false),
+        Category(id: 2, name: "Продукты", emoji: "🍬", isIncome: false),
         Category(id: 3, name: "Зарплата", emoji: "💵", isIncome: true),
         Category(id: 4, name: "На собачку", emoji: "🐕", isIncome: false),
         Category(id: 5, name: "Одежда", emoji: "👔", isIncome: false),
@@ -16,8 +16,7 @@ final class TransactionsService {
         Category(id: 11, name: "Подработка", emoji: "💵", isIncome: true),
     ]
     
-    var transactions: [Transaction]
-    
+    @Published var transactions: [Transaction]
     let accounts: [AccountBrief] = [AccountBrief(id: 0, name: "Adlet", balance: 100000, currency: "RUB")]
     
     init() {
@@ -118,13 +117,70 @@ final class TransactionsService {
         return deletedTransaction
     }
     
+    //MARK: - Метод для фильтрации транзакций по доходу/расходу
+    func getTransactions(by direction: Direction, from start: Date, until end: Date, sortedBy type: SortType) -> [Transaction] {
+        let calendar = Calendar.current
+        
+        let startDate = calendar.startOfDay(for: start)
+        guard let end = calendar.date(
+            bySettingHour: 23,
+            minute: 59,
+            second: 59,
+            of: end
+        ) else {
+            return []
+        }
+        let filtered = self.transactions.filter
+            {
+                $0.category.direction == direction &&
+                $0.transactionDate >= startDate &&
+                $0.transactionDate <= end
+            }
+        
+        return sort(transactions: filtered, by: type)
+    }
     
+    //MARK: - Метод для нахождения суммы транзакций по доходу/расходу
+    func sumTransactionsAmount(by direction: Direction, from start: Date, until end: Date) -> Decimal {
+        let transactionsByDirection = getTransactions(by: direction, from: start, until: end, sortedBy: .amountAscending)
+        let sum = transactionsByDirection.reduce(0, {x, y in
+            x + y.amount
+        })
+        return sum
+    }
+    
+    //TODO: в будущем заменить символ рубля на enum, и в зависимости от настроек юзера уже форматировать. Пока только рубль )0))0)
+    func formatAmount(_ amount: Decimal) -> String {
+        
+        return "\(amount) ₽"
+    }
+    
+    func sort(transactions: [Transaction],by type: SortType) -> [Transaction] {
+        switch type {
+        case .dateAscending:
+            return transactions.sorted { $0.transactionDate < $1.transactionDate }
+        case .dateDescending:
+            return transactions.sorted { $0.transactionDate > $1.transactionDate }
+        case .amountAscending:
+            return transactions.sorted { $0.amount < $1.amount }
+        case .amountDescending:
+            return transactions.sorted { $0.amount > $1.amount }
+        }
+    }
 }
-
 
 enum NetworkError: Error {
     case invalidId
     case invalidDate
     case transactionIdAlreadyExists
     case startDateIsLaterThanEndDate
+}
+
+enum SortType: String, CaseIterable, Identifiable {
+    case dateAscending = "Сначала старые"
+    case dateDescending = "Сначала новые"
+    case amountAscending = "По возрастанию"
+    case amountDescending = "По убыванию"
+    
+    var id: String { rawValue }
 }
