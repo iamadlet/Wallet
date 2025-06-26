@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HistoryView: View {
     let direction: Direction
-    @StateObject var model = TransactionsService()
+    @StateObject var model = TransactionsViewModel(transactionsService: TransactionsService())
     @State private var startDate: Date = {
         Calendar.current.date(
             byAdding: .month, value: -1, to: Date()
@@ -10,7 +10,6 @@ struct HistoryView: View {
     }()
     
     @State private var endDate = Calendar.current.startOfDay(for: Date())
-    @State var sortType: SortType = .dateDescending
     var body: some View {
         NavigationView {
             List {
@@ -51,16 +50,13 @@ struct HistoryView: View {
                     }
                     
                     //MARK: - Выбор сортировки
-                    Picker("Сортировка", selection: $sortType) {
+                    Picker("Сортировка", selection: $model.sortType) {
                         ForEach(SortType.allCases, id: \.self) { type in
                             Text(type.rawValue)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
                                 .tag(type)
                         }
-                    }
-                    .onChange(of: sortType) { newType, oldType in
-                        sortType = newType
                     }
                 }
                 
@@ -70,7 +66,7 @@ struct HistoryView: View {
                             by: direction,
                             from: startDate,
                             until: endDate,
-                            sortedBy: sortType
+                            sortedBy: model.sortType
                         ),
                         isShowingTransactionTime: true
                     )
@@ -78,6 +74,13 @@ struct HistoryView: View {
                 
             }
             .navigationTitle("Моя история")
+            .task {
+                await model.loadTransactions(
+                    accountId: 0,
+                    from: model.today,
+                    until: model.today
+                )
+            }
         }
     }
 }

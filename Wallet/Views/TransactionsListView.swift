@@ -1,9 +1,7 @@
 import SwiftUI
 
 struct TransactionsListView: View {
-    @StateObject var model = TransactionsService()
-    @State var sortType: SortType = .dateDescending
-    let today = Date()
+    @StateObject var model = TransactionsViewModel(transactionsService: TransactionsService())
     var direction: Direction
     var body: some View {
         NavigationStack {
@@ -16,7 +14,7 @@ struct TransactionsListView: View {
                         Text(model.formatAmount(sum))
                     }
                     //MARK: - Выбор сортировки
-                    Picker("Сортировка", selection: $sortType) {
+                    Picker("Сортировка", selection: $model.sortType) {
                         ForEach(SortType.allCases, id: \.self) { type in
                             Text(type.rawValue)
                                 .lineLimit(1)
@@ -24,18 +22,15 @@ struct TransactionsListView: View {
                                 .tag(type)
                         }
                     }
-                    .onChange(of: sortType) { newType, oldType in
-                        sortType = newType
-                    }
                 }
                 
                 Section("Операции") {
                     TransactionsListSectionView(
                         transactions: model.getTransactions(
                             by: direction,
-                            from: today,
-                            until: today,
-                            sortedBy: sortType
+                            from: model.today,
+                            until: model.today,
+                            sortedBy: model.sortType
                         ),
                         isShowingTransactionTime: false
                     )
@@ -51,6 +46,13 @@ struct TransactionsListView: View {
                         Image("History")
                     }
                 }
+            }
+            .task {
+                await model.loadTransactions(
+                    accountId: 0,
+                    from: model.today,
+                    until: model.today
+                )
             }
         }
     }
