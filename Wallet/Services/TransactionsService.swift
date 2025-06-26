@@ -39,22 +39,24 @@ final class TransactionsService: ObservableObject {
     
     
     //MARK: - Aсинхронный метод для получения списка операций за период
-    func getTransactionsByPeriod(accountId: Int, startDate: String, endDate: String) async throws -> [Transaction] {
+    func getTransactionsByPeriod(accountId: Int = 0, startDate: String, endDate: String) async throws -> [Transaction] {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withYear, .withMonth, .withDay]
-        
-        guard let startDateFormatted = formatter.date(from: startDate) else {
+        guard let start = formatter.date(from: startDate),
+              let end   = formatter.date(from:   endDate) else {
             throw NetworkError.invalidDate
         }
-        guard let endDateFormatted = formatter.date(from: endDate) else {
-            throw NetworkError.invalidDate
+        let calendar = Calendar.current
+        let from = calendar.startOfDay(for: start)
+        let until = calendar.date(
+            bySettingHour: 23, minute: 59, second: 59,
+            of: end
+        )!
+
+        return transactions.filter {
+            $0.transactionDate >= from &&
+            $0.transactionDate <= until
         }
-        
-        guard startDateFormatted < endDateFormatted else {
-            throw NetworkError.startDateIsLaterThanEndDate
-        }
-        
-        return transactions.filter { $0.createdAt >= startDateFormatted && $0.createdAt <= endDateFormatted}
     }
     //MARK: - Aсинхронный метод для создания транзакции
     func createTransaction(from request: TransactionRequest) async throws -> Transaction {
