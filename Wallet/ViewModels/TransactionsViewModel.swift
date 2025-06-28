@@ -67,26 +67,26 @@ final class TransactionsViewModel: ObservableObject {
     
     func loadTransactions(accountId: Int, from start: Date, until end: Date) async {
         isLoading = true
-          defer { isLoading = false }
-          do {
+        defer { isLoading = false }
+        do {
             let iso = ISO8601DateFormatter()
             iso.formatOptions = [.withYear, .withMonth, .withDay]
             let startString = iso.string(from: start)
             let endString   = iso.string(from: end)
-
+            
             let raw = try await transactionsService
-              .getTransactionsByPeriod(
-                accountId: accountId,
-                startDate: startString,
-                endDate: endString
-              )
+                .getTransactionsByPeriod(
+                    accountId: accountId,
+                    startDate: startString,
+                    endDate: endString
+                )
             // now you have the freshly fetched array…
             // you can either store it directly:
             self.transactions = raw
             // …or post-process it with your sync filter/sort helpers:
             // self.transactions = sort(transactions: raw, by: sortType)
-          } catch {
+        } catch {
             self.error = error
-          }
+        }
     }
 }

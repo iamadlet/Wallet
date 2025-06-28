@@ -40,8 +40,32 @@ struct BankAccount: Codable {
     }
 }
 
-enum Currency: String, Codable {
+enum Currency: String, CaseIterable, Codable, Identifiable {
     case RUB = "RUB"
     case EUR = "EUR"
     case USD = "USD"
+    
+    var symbol: String {
+        switch self {
+        case .RUB:
+            return "₽"
+        case .EUR:
+            return "€"
+        case .USD:
+            return "$"
+        }
+    }
+    
+    var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .RUB:
+            return "Российский рубль ₽"
+        case .USD:
+            return "Доллар США $"
+        case .EUR:
+            return "Евро €"
+        }
+    }
 }
