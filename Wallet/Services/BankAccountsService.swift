@@ -6,7 +6,7 @@ final class BankAccountsService {
         id: 1,
         userId: 1,
         name: "Personal",
-        balance: 10000,
+        balance: -670000,
         currency: "RUB",
         createdAt: Date.now,
         updatedAt: Date.now
@@ -16,7 +16,7 @@ final class BankAccountsService {
         return bankAccounts[0]
     }
     
-    //TODO: точно ли 1 счёт в массиве ???? 
+    
     func changeAccount(name: String, balance: Decimal, currency: String) async throws {
         let newAccount = BankAccount(
             id: bankAccounts[0].id,

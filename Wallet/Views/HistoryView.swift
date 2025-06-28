@@ -8,8 +8,11 @@ struct HistoryView: View {
             byAdding: .month, value: -1, to: Date()
         )!
     }()
+    @State private var endDate: Date = {
+        Calendar.current.date(byAdding: .second, value: -1, to: Date()
+        )!
+    }()
     
-    @State private var endDate = Calendar.current.startOfDay(for: Date())
     var body: some View {
         NavigationView {
             List {
@@ -77,9 +80,19 @@ struct HistoryView: View {
             .task {
                 await model.loadTransactions(
                     accountId: 0,
-                    from: model.today,
-                    until: model.today
+                    from: startDate,
+                    until: endDate
                 )
+            }
+            .onChange(of: startDate) { _, _ in
+              Task { await model.loadTransactions(accountId: 0,
+                                                  from: startDate,
+                                                  until: endDate) }
+            }
+            .onChange(of: endDate)   { _, _ in
+              Task { await model.loadTransactions(accountId: 0,
+                                                  from: startDate,
+                                                  until: endDate) }
             }
         }
     }
