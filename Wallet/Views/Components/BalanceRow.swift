@@ -9,8 +9,7 @@ struct BalanceRow: View {
     var body: some View {
         Section {
             HStack {
-                Text("💰")
-                Text("Баланс")
+                Text("💰 Баланс")
                 Spacer()
                 if editMode?.wrappedValue == .inactive {
                     Text("\(model.formatBalance())")
