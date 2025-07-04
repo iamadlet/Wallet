@@ -14,7 +14,7 @@ final class TransactionsViewModel: ObservableObject {
         self.transactionsService = transactionsService
     }
     
-    //MARK: - Метод для фильтрации транзакций по доходу/расходу
+    // MARK: - Метод для фильтрации транзакций по доходу/расходу
     func getTransactions(by direction: Direction, from start: Date, until end: Date, sortedBy type: SortType) -> [Transaction] {
         let calendar = Calendar.current
         

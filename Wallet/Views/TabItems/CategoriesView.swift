@@ -1,8 +1,29 @@
 import SwiftUI
 
 struct CategoriesView: View {
+    @StateObject var model = CategoriesViewModel(categoriesService: CategoriesService())
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            List {
+                Section("Статьи") {
+                    ForEach(model.filteredCategories) { category in
+                        HStack {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.backgroundGreen)
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 22)
+                                Text("\(category.emoji)")
+                                    .font(.system(size: 11.5))
+                            }
+                            Text(category.name)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Мои статьи")
+        }
+        .searchable(text: $model.searchText)
     }
 }
 

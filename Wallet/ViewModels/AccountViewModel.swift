@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 final class AccountViewModel: ObservableObject {
     @Published var balance: Decimal
     @Published var currency: String
