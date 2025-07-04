@@ -1,11 +1,15 @@
 import Foundation
 
 
-struct Category: Codable, Equatable {
+struct Category: Codable, Equatable, Identifiable, FuzzySearchable {
     let id: Int
     let name: String
     let emoji: Character
     let isIncome: Bool
+    
+    var searchableString: String {
+        return name
+    }
     
     var direction: Direction {
         isIncome ? .income : .outcome

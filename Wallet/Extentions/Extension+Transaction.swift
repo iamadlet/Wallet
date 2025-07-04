@@ -12,7 +12,7 @@ extension Transaction {
             "category": self.category,
             "amount": String(format: "%.2f", NSDecimalNumber(decimal: amount).doubleValue),
             "transactionDate": formatter.string(from: self.transactionDate),
-            "comment": self.comment,
+            "comment": self.comment ?? "",
             "createdAt": formatter.string(from: self.createdAt),
             "updatedAt": formatter.string(from: self.updatedAt)
         ]
