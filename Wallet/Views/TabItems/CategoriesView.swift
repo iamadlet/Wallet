@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CategoriesView: View {
     @StateObject var model = CategoriesViewModel(categoriesService: CategoriesService())
-//    @State private var searchText: String = ""
     var body: some View {
         NavigationStack {
             List {
