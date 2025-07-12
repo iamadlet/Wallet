@@ -90,19 +90,19 @@ class CreateTransactionViewModel: ObservableObject {
     
     func saveTransaction() async throws -> Bool {
         do {
-            if let existing = existingTransaction, let category = self.category {
+            let validatedAmount = try validateAmount()
+            let validatedTransactionDate = try makeTransactionDate()
+            let validatedCategoryId = try validateCategory()
+            
+            if let existing = existingTransaction {
                 let transactionDate = try makeTransactionDate()
-                
-                let isoFormatter = ISO8601DateFormatter()
-                let transactionDateString = isoFormatter.string(from: transactionDate)
-                //            let createdAtString = isoFormatter.string(from: existing.createdAt)
                 
                 try await transactionService.editTransaction(
                     id: existing.id,
                     accountId: accountId,
-                    categoryId: category.id,
-                    amount: formatAmount(),
-                    transactionDate: transactionDate,
+                    categoryId: validatedCategoryId,
+                    amount: validatedAmount,
+                    transactionDate: validatedTransactionDate,
                     comment: self.comment,
                     createdAt: existing.createdAt
                 )
@@ -154,14 +154,27 @@ class CreateTransactionViewModel: ObservableObject {
         return transactionDate
     }
     
-    func formatAmount() -> Decimal {
+    private func validateAmount() throws -> Decimal {
+        let raw = amount.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !raw.isEmpty else {
+            throw TransactionRequestError.invalidAmount
+        }
+        
         let fmt = NumberFormatter()
         fmt.numberStyle = .decimal
         fmt.locale = Locale.current
-        guard let num = fmt.number(from: self.amount) else {
-            return .zero
+        
+        guard let num = fmt.number(from: self.amount)?.decimalValue, num > 0 else {
+            throw TransactionRequestError.invalidAmount
         }
-        return num.decimalValue
+        return num
+    }
+    
+    private func validateCategory() throws -> Int {
+        guard let c = category else {
+            throw TransactionRequestError.invalidCategory
+        }
+        return c.id
     }
 }
 
