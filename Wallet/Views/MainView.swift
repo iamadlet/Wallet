@@ -1,15 +1,18 @@
 import SwiftUI
 
 struct MainView: View {
+    @StateObject var model: TransactionsViewModel
     var body: some View {
         TabView {
             TransactionsListView(direction: .outcome)
+                .environmentObject(model)
                 .tabItem {
                     Text("Расходы")
                     Image("OutcomesLogo")
                 }
             
             TransactionsListView(direction: .income)
+                .environmentObject(model)
                 .tabItem {
                     Text("Доходы")
                     Image("IncomesLogo")
@@ -37,5 +40,5 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    MainView(model: TransactionsViewModel())
 }

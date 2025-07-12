@@ -8,11 +8,11 @@ final class TransactionsViewModel: ObservableObject {
     @Published var sortType: SortType = .dateDescending
     @Published var error: Error?
 
-    private let transactionsService: TransactionsService
+    let transactionsService = TransactionsService()
     
-    init(transactionsService: TransactionsService) {
-        self.transactionsService = transactionsService
-    }
+//    init(transactionsService: TransactionsService) {
+//        self.transactionsService = transactionsService
+//    }
     
     // MARK: - Метод для фильтрации транзакций по доходу/расходу
     func getTransactions(by direction: Direction, from start: Date, until end: Date, sortedBy type: SortType) -> [Transaction] {

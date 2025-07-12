@@ -29,7 +29,7 @@ struct WalletApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView(model: TransactionsViewModel())
         }
         .modelContainer(sharedModelContainer)
     }

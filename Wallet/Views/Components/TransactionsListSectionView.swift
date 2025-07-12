@@ -3,9 +3,12 @@ import SwiftUI
 struct TransactionsListSectionView: View {
     var transactions: [Transaction]
     var isShowingTransactionTime: Bool
+    @Binding var popoverState: TransactionSheetState?
     var body: some View {
         ForEach(transactions) { transaction in
-            NavigationLink(destination: TransactionDetailView()) {
+            Button(action: {
+                popoverState = .edit(transaction)
+            }) {
                 HStack {
                     ZStack {
                         Circle()
@@ -30,8 +33,17 @@ struct TransactionsListSectionView: View {
                             Text("\(transaction.transactionDate, style: .time)")
                         }
                     }
+                    Image(systemName: "chevron.right")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 6)
                 }
+                .foregroundStyle(Color.black)
             }
         }
     }
+}
+
+#Preview {
+    TransactionsListView(direction: .outcome)
 }

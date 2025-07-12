@@ -1,7 +1,7 @@
 import Foundation
 
 
-struct Category: Codable, Equatable, Identifiable, FuzzySearchable {
+struct Category: Codable, Equatable, Identifiable, FuzzySearchable, Hashable {
     let id: Int
     let name: String
     let emoji: Character
