@@ -69,8 +69,6 @@ final class TransactionsService: ObservableObject {
             throw NetworkError.transactionIdAlreadyExists
         }
         
-        
-        //ВОПРОС: - Какую дату ставить в createdAt и updatedAt ????
         let newTransaction = Transaction(
             id: newId,
             account: accounts[accountIndex],
@@ -85,26 +83,25 @@ final class TransactionsService: ObservableObject {
     }
     
     //MARK: - Aсинхронный метод для редактирования транзакции
-    func editTransaction(of id: Int, accountId: Int, categoryId: Int, amount: Decimal, transactionDate: String, comment: String) async throws -> Transaction {
+    func editTransaction(id: Int, accountId: Int, categoryId: Int, amount: Decimal, transactionDate: Date, comment: String, createdAt: Date) async throws -> Transaction {
         guard let index = transactions.firstIndex(where: { $0.id == id }) else {
             throw NetworkError.invalidId
         }
-        
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        
-        guard let transactionDateFormatted = formatter.date(from: transactionDate) else {
-            throw NetworkError.invalidDate
+        guard let acct = accounts.first(where: { $0.id == accountId }) else {
+            throw NetworkError.invalidAccount
+        }
+        guard let cat  = categories.first(where: { $0.id == categoryId }) else {
+            throw NetworkError.invalidCategory
         }
         
         let updatedTransaction = Transaction(
             id: id,
-            account: accounts[accountId],
-            category: categories[categoryId],
+            account: acct,
+            category: cat,
             amount: amount,
-            transactionDate: transactionDateFormatted,
+            transactionDate: transactionDate,
             comment: comment,
-            createdAt: Date.now,
+            createdAt: createdAt,
             updatedAt: Date.now
         )
         transactions[index] = updatedTransaction
@@ -176,6 +173,8 @@ enum NetworkError: Error {
     case invalidDate
     case transactionIdAlreadyExists
     case startDateIsLaterThanEndDate
+    case invalidAccount
+    case invalidCategory
 }
 
 enum SortType: String, CaseIterable, Identifiable {

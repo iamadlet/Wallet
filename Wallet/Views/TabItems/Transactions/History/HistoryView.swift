@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @EnvironmentObject var model: TransactionsViewModel
     let direction: Direction
-    @StateObject var model = TransactionsViewModel(transactionsService: TransactionsService())
     @State private var startDate: Date = {
         Calendar.current.date(
             byAdding: .month, value: -1, to: Date()
@@ -12,9 +12,12 @@ struct HistoryView: View {
         Calendar.current.date(byAdding: .second, value: -1, to: Date()
         )!
     }()
+    @State private var showAnalysis = false
+    @State private var showEditTransaction: Bool = false
+    @State private var selectedTx: Transaction?
+    @State private var popoverState: TransactionSheetState?
     
     var body: some View {
-        NavigationView {
             List {
                 Section{
                     HStack {
@@ -25,7 +28,7 @@ struct HistoryView: View {
                         CustomDatePickerView(date: $startDate)
                             .onChange(of: startDate) { oldDate, newDate in
                                 if newDate > endDate {
-                                    startDate = endDate
+                                    endDate = newDate
                                 }
                             }
                     }
@@ -38,7 +41,7 @@ struct HistoryView: View {
                         CustomDatePickerView(date: $endDate)
                             .onChange(of: endDate) { oldDate, newDate in
                                 if newDate < startDate {
-                                    endDate = startDate
+                                    startDate = newDate
                                 }
                             }
                     }
@@ -71,12 +74,47 @@ struct HistoryView: View {
                             until: endDate,
                             sortedBy: model.sortType
                         ),
-                        isShowingTransactionTime: true
-                    )
+                        isShowingTransactionTime: true,
+                        popoverState: $popoverState)
                 }
                 
             }
+            .popover(item: $popoverState) { state in
+                let transactionToEdit: Transaction? = {
+                    switch state {
+                    case .create: return nil
+                    case .edit(let transaction): return transaction
+                    }
+                }()
+                let childVM = CreateTransactionViewModel(
+                    accountService: BankAccountsService(),
+                    transactionService: model.transactionsService,
+                    categoriesService: CategoriesService(),
+                    existing: transactionToEdit
+                )
+                CreateTransactionView(
+                    direction: direction,
+                    viewModel: childVM
+                )
+                .onDisappear {
+                    Task {
+                        await model.loadTransactions(
+                            accountId: 0,
+                            from: startDate,
+                            until: endDate
+                        )
+                    }
+                }
+            }
             .navigationTitle("Моя история")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showAnalysis = true }) {
+                        Image(systemName: "chart.pie")
+                    }
+                }
+            }
             .task {
                 await model.loadTransactions(
                     accountId: 0,
@@ -94,7 +132,12 @@ struct HistoryView: View {
                                                   from: startDate,
                                                   until: endDate) }
             }
-        }
+            .background(
+                NavigationLink(destination: AnalysisView(direction: direction), isActive: $showAnalysis) {
+                    EmptyView()
+                }
+                .hidden()
+            )
     }
 }
 
