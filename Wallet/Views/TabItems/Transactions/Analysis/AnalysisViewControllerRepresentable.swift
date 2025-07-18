@@ -11,8 +11,11 @@ struct AnalysisViewControllerRepresentable: UIViewControllerRepresentable {
     @Binding var startDate: Date
     @Binding var endDate: Date
     
+    @EnvironmentObject var deps: AppDependencies
+    @EnvironmentObject var bankVM: BankAccountViewModel
+    
     func makeUIViewController(context: Context) -> AnalysisViewController {
-        let vc = AnalysisViewController(isIncome: isIncome)
+        let vc = AnalysisViewController(isIncome: isIncome, service: deps.transactionService, bankVM: bankVM)
         vc.onStartDateTap = { self.showStartPicker = true }
         vc.onEndDateTap = { self.showEndPicker = true }
         return vc

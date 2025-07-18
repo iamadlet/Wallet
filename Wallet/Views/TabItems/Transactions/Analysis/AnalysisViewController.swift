@@ -47,10 +47,15 @@ class AnalysisViewController: UIViewController {
     
     private var tableViewHeightConstraint: NSLayoutConstraint?
 
+    private let service: TransactionsService
+
+    private let bankVM: BankAccountViewModel
     
-    init(isIncome: Bool) {
+    init(isIncome: Bool, service: TransactionsService, bankVM: BankAccountViewModel) {
         self.isIncome = isIncome
-        self.vm = TransactionsViewModel()
+        self.service = service
+        self.bankVM = bankVM
+        self.vm = TransactionsViewModel(service: service)
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { fatalError() }
@@ -303,7 +308,8 @@ class AnalysisViewController: UIViewController {
     
     func loadTransactions() {
         Task {
-            await vm.loadTransactions(accountId: 0, from: startDate, until: endDate)
+            guard let accountId = bankVM.accountId else { return }
+            await vm.loadTransactions(accountId: accountId, from: startDate, until: endDate)
             tableView.reloadData()
             updateSumLabel()
             DispatchQueue.main.async {
@@ -513,8 +519,8 @@ class TransactionCell: UITableViewCell {
     func configure(with transaction: Transaction, percent: Double) {
         emojiLabel.text = String(transaction.category.emoji)
         titleLabel.text = transaction.category.name
-        if let comment = transaction.comment, !comment.isEmpty {
-            commentLabel.text = comment
+        if !transaction.comment.isEmpty {
+            commentLabel.text = transaction.comment
             commentLabel.isHidden = false
         } else {
             commentLabel.isHidden = true

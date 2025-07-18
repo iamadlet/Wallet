@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CurrencyRow: View {
     @Environment(\.editMode) private var editMode
-    @ObservedObject var model: AccountViewModel
+    @ObservedObject var model: BankAccountViewModel
     @Binding var isShowingPicker: Bool
     
     var body: some View {
@@ -38,5 +38,8 @@ struct CurrencyRow: View {
 
 
 #Preview {
-    CurrencyRow(model: AccountViewModel(service: BankAccountsService()), isShowingPicker: .constant(true))
+    let deps = AppDependencies(token: "тестовый_токен")
+    let model = BankAccountViewModel(service: deps.bankService)
+
+    CurrencyRow(model: model, isShowingPicker: .constant(true))
 }

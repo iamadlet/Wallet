@@ -1,33 +1,40 @@
 import Foundation
 
 final class BankAccountsService {
-    
-    var bankAccounts: [BankAccount] = [BankAccount(
-        id: 1,
-        userId: 1,
-        name: "Personal",
-        balance: -670000,
-        currency: "RUB",
-        createdAt: Date.now,
-        updatedAt: Date.now
-    )]
+    private let client: NetworkClient
+
+    init(client: NetworkClient) {
+        self.client = client
+    }
     
     func getInfo() async throws -> BankAccount {
-        return bankAccounts[0]
+        let accounts: [BankAccount] = try await client.request(
+            path: "accounts",
+            body: EmptyBody()
+        )
+
+        guard let first = accounts.first else {
+            throw URLError(.badServerResponse)
+        }
+
+        return first
     }
     
     
     func changeAccount(name: String, balance: Decimal, currency: String) async throws {
-        let newAccount = BankAccount(
-            id: bankAccounts[0].id,
-            userId: bankAccounts[0].id,
-            name: name,
-            balance: balance,
-            currency: currency,
-            createdAt: bankAccounts[0].createdAt,
-            updatedAt: bankAccounts[0].updatedAt
-        )
-        
-        bankAccounts[0] = newAccount
+        struct UpdateBody: Encodable {
+            let name: String
+            let balance: Decimal
+            let currency: String
+        }
+
+        let body = UpdateBody(name: name, balance: balance, currency: currency)
+        let account = try await getInfo()
+
+        _ = try await client.request(
+            path: "accounts/\(account.id)",
+            method: "PUT",
+            body: body
+        ) as EmptyResponse
     }
 }
