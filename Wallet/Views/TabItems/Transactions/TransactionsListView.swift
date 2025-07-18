@@ -2,9 +2,13 @@ import SwiftUI
 
 struct TransactionsListView: View {
     @EnvironmentObject var model: TransactionsViewModel
+    @EnvironmentObject var bankVM: BankAccountViewModel
+    @EnvironmentObject var deps: AppDependencies
+    
     var direction: Direction
     @State private var isShowingAddTransactionView: Bool = false
     @State private var popoverState: TransactionSheetState?
+    
     var body: some View {
         NavigationStack {
             List {
@@ -12,7 +16,7 @@ struct TransactionsListView: View {
                     HStack {
                         Text("Всего")
                         Spacer()
-                        let sum = model.sumTransactionsAmount(by: direction, from: Date(), until: Date())
+                        let sum = model.sumTransactionsAmount(by: direction, from: model.today, until: model.today)
                         Text(model.formatAmount(sum))
                     }
                     //MARK: - Выбор сортировки
@@ -39,12 +43,17 @@ struct TransactionsListView: View {
                 }
             }
             .refreshable {
-                await model.loadTransactions(accountId: 0, from: model.today, until: model.today)
+                if let accountId = bankVM.accountId {
+                    await model.loadTransactions(
+                        accountId: accountId,
+                        from: model.today,
+                        until: model.today
+                    )
+                }
             }
             .listStyle(.insetGrouped)
             .overlay(
                 Button {
-//                    isShowingAddTransactionView.toggle()
                     popoverState = .create
                 } label: {
                     Image(systemName: "plus")
@@ -66,19 +75,27 @@ struct TransactionsListView: View {
                     case .edit(let transaction): return transaction
                     }
                 }()
-                let childVM = CreateTransactionViewModel(
-                    accountService: BankAccountsService(),
-                    transactionService: model.transactionsService,
-                    categoriesService: CategoriesService(),
-                    existing: transactionToEdit
-                )
-                CreateTransactionView(
-                    direction: direction,
-                    viewModel: childVM
-                )
-                .onDisappear {
-                    Task {
-                        await model.loadTransactions(accountId: 0, from: model.today, until: model.today)
+                if let accountId = bankVM.accountId {
+                    let childVM = CreateTransactionViewModel(
+                        accountId: accountId,
+                        accountService: deps.bankService,
+                        transactionService: deps.transactionService,
+                        categoriesService: deps.categoriesService,
+                        existing: transactionToEdit
+                    )
+
+                    CreateTransactionView(direction: direction)
+                        .environmentObject(childVM)
+                    .onDisappear {
+                        Task {
+                            if let accountId = bankVM.accountId {
+                                await model.loadTransactions(
+                                    accountId: accountId,
+                                    from: model.today,
+                                    until: model.today
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -88,24 +105,43 @@ struct TransactionsListView: View {
                     NavigationLink {
                         HistoryView(direction: direction)
                             .environmentObject(model)
+                            .environmentObject(bankVM)
+                            .environmentObject(deps)
                     } label: {
                         Image("History")
                     }
                 }
             }
+            .onChange(of: bankVM.accountId) { newId in
+                guard let id = newId else { return }
+                Task {
+                    await model.loadTransactions(accountId: id,
+                                                 from: model.today,
+                                                 until: model.today)
+                }
+            }
             .task {
-                await model.loadTransactions(
-                    accountId: 0,
-                    from: model.today,
-                    until: model.today
-                )
+                if let accountId = bankVM.accountId {
+                    await model.loadTransactions(
+                        accountId: accountId,
+                        from: model.today,
+                        until: model.today
+                    )
+                }
             }
         }
     }
 }
 
 #Preview {
+    let deps = AppDependencies(token: "тест")
+    let model = TransactionsViewModel(service: deps.transactionService)
+    let bankVM = BankAccountViewModel(service: deps.bankService)
+    
     TransactionsListView(direction: .outcome)
+        .environmentObject(model)
+        .environmentObject(bankVM)
+        .environmentObject(deps)
 }
 
 

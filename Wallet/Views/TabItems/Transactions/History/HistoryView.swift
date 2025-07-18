@@ -2,7 +2,11 @@ import SwiftUI
 
 struct HistoryView: View {
     @EnvironmentObject var model: TransactionsViewModel
+    @EnvironmentObject var bankVM: BankAccountViewModel
+    @EnvironmentObject var deps: AppDependencies
+    
     let direction: Direction
+    
     @State private var startDate: Date = {
         Calendar.current.date(
             byAdding: .month, value: -1, to: Date()
@@ -20,39 +24,19 @@ struct HistoryView: View {
     var body: some View {
             List {
                 Section{
-                    HStack {
-                        Text("Начало")
-                        
-                        Spacer()
-                        
-                        CustomDatePickerView(date: $startDate)
-                            .onChange(of: startDate) { oldDate, newDate in
-                                if newDate > endDate {
-                                    endDate = newDate
-                                }
-                            }
-                    }
+                    startSection
                     
-                    HStack {
-                        Text("Конец")
-                        
-                        Spacer()
-                        
-                        CustomDatePickerView(date: $endDate)
-                            .onChange(of: endDate) { oldDate, newDate in
-                                if newDate < startDate {
-                                    startDate = newDate
-                                }
-                            }
-                    }
+                    endSection
                     
                     HStack {
                         Text("Сумма")
                         
                         Spacer()
                         
-                        let sum = model.sumTransactionsAmount(by: direction, from: startDate, until: endDate)
-                        Text(model.formatAmount(sum))
+                        let total = model.sumTransactionsAmount(by: direction, from: startDate, until: endDate)
+                        let formatted = model.formatAmount(total)
+
+                        Text(formatted)
                     }
                     
                     //MARK: - Выбор сортировки
@@ -66,17 +50,7 @@ struct HistoryView: View {
                     }
                 }
                 
-                Section("Операции"){
-                    TransactionsListSectionView(
-                        transactions: model.getTransactions(
-                            by: direction,
-                            from: startDate,
-                            until: endDate,
-                            sortedBy: model.sortType
-                        ),
-                        isShowingTransactionTime: true,
-                        popoverState: $popoverState)
-                }
+                transactionSection
                 
             }
             .popover(item: $popoverState) { state in
@@ -86,23 +60,27 @@ struct HistoryView: View {
                     case .edit(let transaction): return transaction
                     }
                 }()
-                let childVM = CreateTransactionViewModel(
-                    accountService: BankAccountsService(),
-                    transactionService: model.transactionsService,
-                    categoriesService: CategoriesService(),
-                    existing: transactionToEdit
-                )
-                CreateTransactionView(
-                    direction: direction,
-                    viewModel: childVM
-                )
-                .onDisappear {
-                    Task {
-                        await model.loadTransactions(
-                            accountId: 0,
-                            from: startDate,
-                            until: endDate
-                        )
+                if let accountId = bankVM.accountId {
+                    let childVM = CreateTransactionViewModel(
+                        accountId: accountId,
+                        accountService: deps.bankService,
+                        transactionService: deps.transactionService,
+                        categoriesService: deps.categoriesService,
+                        existing: transactionToEdit
+                    )
+
+                    CreateTransactionView(direction: direction)
+                        .environmentObject(childVM)
+                    .onDisappear {
+                        Task {
+                            if let accountId = bankVM.accountId {
+                                await model.loadTransactions(
+                                    accountId: accountId,
+                                    from: model.today,
+                                    until: model.today
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -116,21 +94,43 @@ struct HistoryView: View {
                 }
             }
             .task {
-                await model.loadTransactions(
-                    accountId: 0,
-                    from: startDate,
-                    until: endDate
-                )
+                if let accountId = bankVM.accountId {
+                    await model.loadTransactions(
+                        accountId: accountId,
+                        from: startDate,
+                        until: endDate
+                    )
+                }
             }
             .onChange(of: startDate) { _, _ in
-              Task { await model.loadTransactions(accountId: 0,
-                                                  from: startDate,
-                                                  until: endDate) }
+                Task {
+                    if let accountId = bankVM.accountId {
+                        await model.loadTransactions(
+                            accountId: accountId,
+                            from: startDate,
+                            until: endDate
+                        )
+                    }
+                }
             }
             .onChange(of: endDate)   { _, _ in
-              Task { await model.loadTransactions(accountId: 0,
-                                                  from: startDate,
-                                                  until: endDate) }
+                Task {
+                    if let accountId = bankVM.accountId {
+                        await model.loadTransactions(
+                            accountId: accountId,
+                            from: startDate,
+                            until: endDate
+                        )
+                    }
+                }
+            }
+            .onChange(of: bankVM.accountId) { newId in
+                guard let id = newId else { return }
+                Task {
+                    await model.loadTransactions(accountId: id,
+                                                 from: model.today,
+                                                 until: model.today)
+                }
             }
             .background(
                 NavigationLink(destination: AnalysisView(direction: direction), isActive: $showAnalysis) {
@@ -139,8 +139,57 @@ struct HistoryView: View {
                 .hidden()
             )
     }
+    
+    var transactionSection: some View {
+        Section("Операции") {
+            TransactionsListSectionView(
+                transactions: model.getTransactions(
+                    by: direction,
+                    from: startDate,
+                    until: endDate,
+                    sortedBy: model.sortType
+                ),
+                isShowingTransactionTime: false,
+                popoverState: $popoverState
+            )
+        }
+    }
+    
+    private var startSection: some View {
+        HStack {
+            Text("Начало")
+            Spacer()
+            CustomDatePickerView(date: $startDate)
+                .onChange(of: startDate) { oldDate, newDate in
+                    if newDate > endDate {
+                        endDate = newDate
+                    }
+                }
+        }
+    }
+    
+    private var endSection: some View {
+        HStack {
+            Text("Конец")
+            Spacer()
+            CustomDatePickerView(date: $endDate)
+                .onChange(of: endDate) { oldDate, newDate in
+                    if newDate < startDate {
+                        startDate = newDate
+                    }
+                }
+        }
+    }
 }
 
 #Preview {
+    let deps = AppDependencies(token: "тест")
+    let model = TransactionsViewModel(service: deps.transactionService)
+    let bankVM = BankAccountViewModel(service: deps.bankService)
+
+    
     HistoryView(direction: .outcome)
+        .environmentObject(model)
+        .environmentObject(bankVM)
+        .environmentObject(deps)
 }

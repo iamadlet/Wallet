@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CategoriesView: View {
-    @StateObject var model = CategoriesViewModel(categoriesService: CategoriesService())
+    @EnvironmentObject var model: CategoriesViewModel
     var body: some View {
         NavigationStack {
             List {
@@ -22,6 +22,9 @@ struct CategoriesView: View {
                 }
             }
             .navigationTitle("Мои статьи")
+            .task {
+                await model.allCategories()
+            }
         }
         .searchable(text: $model.searchText)
     }

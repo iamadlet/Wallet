@@ -2,14 +2,14 @@ import SwiftUI
 
 struct CreateTransactionView: View {
     let direction: Direction
-    @StateObject var viewModel: CreateTransactionViewModel
+    @EnvironmentObject var viewModel: CreateTransactionViewModel
+    
     @Environment(\.dismiss) private var dismiss
     @State private var showAlert: Bool = false
     
     var body: some View {
         NavigationStack {
             Form {
-                
                 Section {
                     Picker("Статья", selection: $viewModel.category) {
                         ForEach(viewModel.categories) { category in
@@ -45,7 +45,9 @@ struct CreateTransactionView: View {
                     Button {
                         dismiss()
                         Task {
-                            try await viewModel.deleteTransaction(viewModel.getTransaction())
+                            if let transaction = viewModel.existingTransaction {
+                                try await viewModel.deleteTransaction(transaction)
+                            }
                         }
                     } label: {
                         Text("Удалить расход")
@@ -79,10 +81,10 @@ struct CreateTransactionView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            Task {
-                try await viewModel.loadCategories(of: direction)
+            .onAppear {
+                Task {
+                    await viewModel.loadCategories(of: direction)
+                }
             }
         }
         .alert("Ошибка", isPresented: $showAlert) {
@@ -94,15 +96,32 @@ struct CreateTransactionView: View {
 }
 
 #Preview {
-    CreateTransactionView(
-        direction: .outcome,
-        viewModel: CreateTransactionViewModel(
-            accountService: BankAccountsService(),
-            transactionService: TransactionsService(),
-            categoriesService: CategoriesService(),
-            existing: nil
-        )
+    let deps = AppDependencies(token: "твой_токен")
+    
+    let account = AccountBrief(id: 1, name: "Основной счёт", balance: 1000, currency: "RUB")
+    let category = Category(id: 1, name: "Еда", emoji: "🍎", isIncome: false)
+
+    let transaction = Transaction(
+        id: 1,
+        account: account,
+        category: category,
+        amount: 100,
+        transactionDate: Date(),
+        comment: "Пример",
+        createdAt: Date(),
+        updatedAt: Date()
     )
+
+    let viewModel = CreateTransactionViewModel(
+        accountId: 1,
+        accountService: deps.bankService,
+        transactionService: deps.transactionService,
+        categoriesService: deps.categoriesService,
+        existing: transaction
+    )
+    
+    CreateTransactionView(direction: .outcome)
+        .environmentObject(viewModel)
 }
 
 #Preview {

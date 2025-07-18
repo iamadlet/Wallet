@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BankAccountView: View {
-    @StateObject var model = AccountViewModel(service: BankAccountsService())
+    @EnvironmentObject var model: BankAccountViewModel
     @Environment(\.editMode) private var editMode
     @State private var isShowingPicker = false
     @State private var editModeState: EditMode = .inactive
@@ -16,8 +16,7 @@ struct BankAccountView: View {
             }
             .refreshable {
                 do {
-                    try await model.loadBalance()
-                    try await model.loadCurrency()
+                    try await model.loadAccountInfo()
                 } catch {
                     print("Refresh failed: ", error)
                 }
@@ -41,8 +40,12 @@ struct BankAccountView: View {
                             model.currency = model.editedCurrency ?? model.currency
                             model.balance = model.editedBalance ?? model.balance
                             Task {
-                                try await model.updateCurrency(new: model.currency)
-                                try await model.updateBalance(new: model.balance)
+                                do {
+                                    try await
+                                    model.loadAccountInfo()
+                                } catch {
+                                    print("Refresh failed: ", error)
+                                }
                             }
                         }
                         // Toggle between .active and .inactive
