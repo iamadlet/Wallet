@@ -18,7 +18,11 @@ final class TransactionsService: ObservableObject {
 
         let path = "transactions/account/\(accountId)/period?startDate=\(start)&endDate=\(end)"
 
-        return try await client.request(path: path, method: "GET", body: EmptyBody())
+        return try await client.request(
+            path: path,
+            method: "GET",
+            body: EmptyBody()
+        )
     }
     //MARK: - Aсинхронный метод для создания транзакции
     func createTransaction(from request: TransactionRequest) async throws -> Transaction {
