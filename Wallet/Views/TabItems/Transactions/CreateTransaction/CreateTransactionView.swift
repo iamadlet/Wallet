@@ -88,7 +88,7 @@ struct CreateTransactionView: View {
         .alert("Ошибка", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Заполните все поля, \(viewModel.error?.localizedDescription ?? "Неизвестная ошибка")")
+            Text("Заполните все поля")
         }
     }
 }
