@@ -10,6 +10,8 @@
 		A004F6E82E18719200C63C7B /* FuzzySearchMatchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A004F6E72E18719200C63C7B /* FuzzySearchMatchResult.swift */; };
 		A004F6EA2E1871C200C63C7B /* FuzzySearchCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A004F6E92E1871C200C63C7B /* FuzzySearchCharacter.swift */; };
 		A004F6EC2E1871E600C63C7B /* FuzzySearchString.swift in Sources */ = {isa = PBXBuildFile; fileRef = A004F6EB2E1871DE00C63C7B /* FuzzySearchString.swift */; };
+		A0180D292E29A34300E24034 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0180D282E29A34300E24034 /* NetworkClient.swift */; };
+		A0180D2B2E29BA8800E24034 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0180D2A2E29BA8800E24034 /* AppDependencies.swift */; };
 		A01C95922E19D15E007F5EAE /* AnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01C95912E19D15E007F5EAE /* AnalysisViewController.swift */; };
 		A01C95932E19D15E007F5EAE /* AnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01C95912E19D15E007F5EAE /* AnalysisViewController.swift */; };
 		A01C95942E19D15E007F5EAE /* AnalysisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01C95912E19D15E007F5EAE /* AnalysisViewController.swift */; };
@@ -28,14 +30,14 @@
 		A0223A382E0F7A440097F7F7 /* BalanceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0223A372E0F7A440097F7F7 /* BalanceRow.swift */; };
 		A0223A3A2E0F80DA0097F7F7 /* SpoilerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0223A392E0F80D60097F7F7 /* SpoilerView.swift */; };
 		A0223A3C2E0F84030097F7F7 /* ShakeGestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0223A3B2E0F83F80097F7F7 /* ShakeGestures.swift */; };
-		A07305C62E0D9CBF0077C861 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07305C52E0D9CBF0077C861 /* AccountViewModel.swift */; };
+		A07305C62E0D9CBF0077C861 /* BankAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07305C52E0D9CBF0077C861 /* BankAccountViewModel.swift */; };
 		A07BE1722E04578E0005489D /* Extensions+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07BE1712E04578E0005489D /* Extensions+Color.swift */; };
 		A07BE1742E047F610005489D /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07BE1732E047F610005489D /* HistoryView.swift */; };
 		A07BE1772E05E4880005489D /* CustomDatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07BE1762E05E4880005489D /* CustomDatePickerView.swift */; };
 		A07BE1792E0621D20005489D /* TransactionsListSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07BE1782E0621D20005489D /* TransactionsListSectionView.swift */; };
 		A080C5C12E0D774600725E71 /* TransactionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A080C5C02E0D774600725E71 /* TransactionsViewModel.swift */; };
+		A0A103292E3101D100F260CE /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A103282E3101D100F260CE /* TransactionResponse.swift */; };
 		A0A595A52E156B67002E8D3A /* CategoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0A595A42E156B67002E8D3A /* CategoriesViewModel.swift */; };
-		A0A595F32E1722CE002E8D3A /* IfritStatic in Frameworks */ = {isa = PBXBuildFile; productRef = A0A595F22E1722CE002E8D3A /* IfritStatic */; };
 		A0DC48BC2E00C22600D05378 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DC48BB2E00C22600D05378 /* MainView.swift */; };
 		A0DC48C62E00D55000D05378 /* BankAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DC48C52E00D55000D05378 /* BankAccountView.swift */; };
 		A0DC48C82E00D57200D05378 /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DC48C72E00D57200D05378 /* CategoriesView.swift */; };
@@ -85,6 +87,8 @@
 		A004F6E72E18719200C63C7B /* FuzzySearchMatchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzySearchMatchResult.swift; sourceTree = "<group>"; };
 		A004F6E92E1871C200C63C7B /* FuzzySearchCharacter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzySearchCharacter.swift; sourceTree = "<group>"; };
 		A004F6EB2E1871DE00C63C7B /* FuzzySearchString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuzzySearchString.swift; sourceTree = "<group>"; };
+		A0180D282E29A34300E24034 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		A0180D2A2E29BA8800E24034 /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
 		A01C95912E19D15E007F5EAE /* AnalysisViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewController.swift; sourceTree = "<group>"; };
 		A01C95952E19D570007F5EAE /* AnalysisViewControllerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewControllerRepresentable.swift; sourceTree = "<group>"; };
 		A01C95992E19D6A0007F5EAE /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
@@ -95,12 +99,13 @@
 		A0223A372E0F7A440097F7F7 /* BalanceRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRow.swift; sourceTree = "<group>"; };
 		A0223A392E0F80D60097F7F7 /* SpoilerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerView.swift; sourceTree = "<group>"; };
 		A0223A3B2E0F83F80097F7F7 /* ShakeGestures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShakeGestures.swift; sourceTree = "<group>"; };
-		A07305C52E0D9CBF0077C861 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
+		A07305C52E0D9CBF0077C861 /* BankAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankAccountViewModel.swift; sourceTree = "<group>"; };
 		A07BE1712E04578E0005489D /* Extensions+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+Color.swift"; sourceTree = "<group>"; };
 		A07BE1732E047F610005489D /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		A07BE1762E05E4880005489D /* CustomDatePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDatePickerView.swift; sourceTree = "<group>"; };
 		A07BE1782E0621D20005489D /* TransactionsListSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsListSectionView.swift; sourceTree = "<group>"; };
 		A080C5C02E0D774600725E71 /* TransactionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsViewModel.swift; sourceTree = "<group>"; };
+		A0A103282E3101D100F260CE /* TransactionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionResponse.swift; sourceTree = "<group>"; };
 		A0A595A42E156B67002E8D3A /* CategoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesViewModel.swift; sourceTree = "<group>"; };
 		A0DC48BB2E00C22600D05378 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A0DC48C52E00D55000D05378 /* BankAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankAccountView.swift; sourceTree = "<group>"; };
@@ -143,7 +148,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0A595F32E1722CE002E8D3A /* IfritStatic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,7 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				A080C5C02E0D774600725E71 /* TransactionsViewModel.swift */,
-				A07305C52E0D9CBF0077C861 /* AccountViewModel.swift */,
+				A07305C52E0D9CBF0077C861 /* BankAccountViewModel.swift */,
 				A0A595A42E156B67002E8D3A /* CategoriesViewModel.swift */,
 				A01C95FD2E1DC0DA007F5EAE /* CreateTransactionViewModel.swift */,
 			);
@@ -355,6 +359,7 @@
 				A0E47F362DF7352B009DEDB8 /* Transaction.swift */,
 				A0EF98D62DF9F765009B4A76 /* TransactionRequest.swift */,
 				A0EF98D82DFA18A0009B4A76 /* AccountBrief.swift */,
+				A0A103282E3101D100F260CE /* TransactionResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -377,6 +382,8 @@
 				A0EF98CE2DF8831D009B4A76 /* CategoriesService.swift */,
 				A0EF98D02DF8D8B6009B4A76 /* BankAccountsService.swift */,
 				A0EF98D22DF8DDBE009B4A76 /* TransactionsService.swift */,
+				A0180D282E29A34300E24034 /* NetworkClient.swift */,
+				A0180D2A2E29BA8800E24034 /* AppDependencies.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -474,7 +481,6 @@
 			);
 			mainGroup = A0E47EF92DF731D6009DEDB8;
 			packageReferences = (
-				A0A595EF2E1722CE002E8D3A /* XCRemoteSwiftPackageReference "Ifrit" */,
 			);
 			productRefGroup = A0E47F032DF731D6009DEDB8 /* Products */;
 			projectDirPath = "";
@@ -527,6 +533,7 @@
 				A0A595A52E156B67002E8D3A /* CategoriesViewModel.swift in Sources */,
 				A080C5C12E0D774600725E71 /* TransactionsViewModel.swift in Sources */,
 				A0223A3C2E0F84030097F7F7 /* ShakeGestures.swift in Sources */,
+				A0A103292E3101D100F260CE /* TransactionResponse.swift in Sources */,
 				A0223A362E0F79B30097F7F7 /* CurrencyRow.swift in Sources */,
 				A07BE1742E047F610005489D /* HistoryView.swift in Sources */,
 				A004F6EC2E1871E600C63C7B /* FuzzySearchString.swift in Sources */,
@@ -535,12 +542,14 @@
 				A0EF98D12DF8D8B6009B4A76 /* BankAccountsService.swift in Sources */,
 				A01C95982E19D570007F5EAE /* AnalysisViewControllerRepresentable.swift in Sources */,
 				A0DC48CA2E00D58600D05378 /* SettingsView.swift in Sources */,
+				A0180D292E29A34300E24034 /* NetworkClient.swift in Sources */,
 				A0223A3A2E0F80DA0097F7F7 /* SpoilerView.swift in Sources */,
 				A0E47F3D2DF740E7009DEDB8 /* TransactionsFileCache.swift in Sources */,
 				A0EF98D92DFA18A0009B4A76 /* AccountBrief.swift in Sources */,
 				A01C95FC2E1DB86E007F5EAE /* CustomTimePickerView.swift in Sources */,
 				A004F6EA2E1871C200C63C7B /* FuzzySearchCharacter.swift in Sources */,
 				A01C95FE2E1DC0DA007F5EAE /* CreateTransactionViewModel.swift in Sources */,
+				A0180D2B2E29BA8800E24034 /* AppDependencies.swift in Sources */,
 				A01C959C2E19D6A1007F5EAE /* AnalysisView.swift in Sources */,
 				A0DC48C82E00D57200D05378 /* CategoriesView.swift in Sources */,
 				A0DC48D12E02079300D05378 /* TransactionDetailView.swift in Sources */,
@@ -555,7 +564,7 @@
 				A0E47F332DF732D1009DEDB8 /* Category.swift in Sources */,
 				A07BE1772E05E4880005489D /* CustomDatePickerView.swift in Sources */,
 				A0EF98D32DF8DDBE009B4A76 /* TransactionsService.swift in Sources */,
-				A07305C62E0D9CBF0077C861 /* AccountViewModel.swift in Sources */,
+				A07305C62E0D9CBF0077C861 /* BankAccountViewModel.swift in Sources */,
 				A0EF98CF2DF8831D009B4A76 /* CategoriesService.swift in Sources */,
 				A0223A382E0F7A440097F7F7 /* BalanceRow.swift in Sources */,
 			);
@@ -743,7 +752,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ladletl.Wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ladletl.walletApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -772,7 +781,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ladletl.Wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ladletl.walletApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -892,25 +901,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A0A595EF2E1722CE002E8D3A /* XCRemoteSwiftPackageReference "Ifrit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ukushu/Ifrit.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A0A595F22E1722CE002E8D3A /* IfritStatic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A0A595EF2E1722CE002E8D3A /* XCRemoteSwiftPackageReference "Ifrit" */;
-			productName = IfritStatic;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A0E47EFA2DF731D6009DEDB8 /* Project object */;
 }

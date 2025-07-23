@@ -20,8 +20,8 @@ struct TransactionsListSectionView: View {
                     }
                     VStack(alignment: .leading, spacing: 0) {
                         Text(transaction.category.name)
-                        if let comment = transaction.comment, !comment.isEmpty{
-                            Text(transaction.comment!)
+                        if !transaction.comment.isEmpty {
+                            Text(transaction.comment)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

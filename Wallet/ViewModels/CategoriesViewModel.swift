@@ -16,20 +16,27 @@ final class CategoriesViewModel: ObservableObject {
             .map { $0.item }
     }
     
-    private let categoriesService: CategoriesService
+    private let service: CategoriesService
     
-    init(categoriesService: CategoriesService) {
-        self.categoriesService = categoriesService
-        self.categories = categoriesService.categories
+    init(service: CategoriesService) {
+        self.service = service
     }
     
-    func loadCategories() async {
+    func loadCategories(of direction: Direction) async {
         isLoading = true
         defer { isLoading = false }
         do {
-            let rawCategories = try await categoriesService.categories()
-            
-            self.categories = rawCategories
+            self.categories = try await service.getCategories(of: direction)
+        } catch {
+            self.error = error
+        }
+    }
+    
+    func allCategories() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            self.categories = try await service.categories()
         } catch {
             self.error = error
         }
@@ -39,7 +46,6 @@ final class CategoriesViewModel: ObservableObject {
         guard !searchText.isEmpty else {
             return categories
         }
-        
-        return categories.filter {$0.name == searchText}
+        return categories.filter { $0.name == searchText }
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BalanceRow: View {
     @Environment(\.editMode) private var editMode
-    @ObservedObject var model: AccountViewModel
+    @ObservedObject var model: BankAccountViewModel
     @State var spoilerIsOn = true
     @State private var balanceText: String = ""
     

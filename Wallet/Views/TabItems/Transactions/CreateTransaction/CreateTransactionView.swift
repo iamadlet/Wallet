@@ -2,19 +2,19 @@ import SwiftUI
 
 struct CreateTransactionView: View {
     let direction: Direction
-    @StateObject var viewModel: CreateTransactionViewModel
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var viewModel: CreateTransactionViewModel
+    
     @State private var showAlert: Bool = false
+    @Binding var popoverState: TransactionSheetState?
     
     var body: some View {
         NavigationStack {
             Form {
-                
                 Section {
                     Picker("Статья", selection: $viewModel.category) {
                         ForEach(viewModel.categories) { category in
                             Text(category.name)
-                                .tag(category)
+                                .tag(category as Category?)
                         }
                     }
                     HStack {
@@ -43,9 +43,11 @@ struct CreateTransactionView: View {
                 
                 if viewModel.isEditing() {
                     Button {
-                        dismiss()
+                        popoverState = nil
                         Task {
-                            try await viewModel.deleteTransaction(viewModel.getTransaction())
+                            if let transaction = viewModel.existingTransaction {
+                                try await viewModel.deleteTransaction(transaction)
+                            }
                         }
                     } label: {
                         Text("Удалить расход")
@@ -54,25 +56,24 @@ struct CreateTransactionView: View {
                 }
 
             }
+            .task {
+                await viewModel.loadCategories(of: direction)
+            }
             .navigationTitle(direction == .outcome ? "Мои расходы" : "Мои доходы")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Отменить") {
-                        dismiss()
+                        popoverState = nil
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button((viewModel.existingTransaction != nil) ? "Сохранить" : "Создать") {
+                        showAlert = false
                         Task {
-                            do {
-                                let validated = try await viewModel.saveTransaction()
-                                if validated {
-                                    dismiss()
-                                } else {
-                                    showAlert = true
-                                }
-                            } catch {
-                                print("не удалось сохранить транзакцию:", viewModel.error)
+                            let success = await viewModel.saveTransaction()
+                            if success {
+                                popoverState = nil
+                            } else {
                                 showAlert = true
                             }
                         }
@@ -81,28 +82,44 @@ struct CreateTransactionView: View {
             }
         }
         .onAppear {
-            Task {
-                try await viewModel.loadCategories(of: direction)
-            }
+            showAlert = false
+            viewModel.error = nil
         }
         .alert("Ошибка", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Заполните все поля")
+            Text("Заполните все поля, \(viewModel.error?.localizedDescription ?? "Неизвестная ошибка")")
         }
     }
 }
 
 #Preview {
-    CreateTransactionView(
-        direction: .outcome,
-        viewModel: CreateTransactionViewModel(
-            accountService: BankAccountsService(),
-            transactionService: TransactionsService(),
-            categoriesService: CategoriesService(),
-            existing: nil
-        )
+    let deps = AppDependencies(token: "твой_токен")
+    
+    let account = AccountBrief(id: 1, name: "Основной счёт", balance: 1000, currency: "RUB")
+    let category = Category(id: 1, name: "Еда", emoji: "🍎", isIncome: false)
+
+    let transaction = Transaction(
+        id: 1,
+        account: account,
+        category: category,
+        amount: 100,
+        transactionDate: Date(),
+        comment: "Пример",
+        createdAt: Date(),
+        updatedAt: Date()
     )
+
+    let viewModel = CreateTransactionViewModel(
+        accountId: 1,
+        accountService: deps.bankService,
+        transactionService: deps.transactionService,
+        categoriesService: deps.categoriesService,
+        existing: transaction
+    )
+    
+    CreateTransactionView(direction: .outcome, popoverState: .constant(.create(UUID())))
+        .environmentObject(viewModel)
 }
 
 #Preview {

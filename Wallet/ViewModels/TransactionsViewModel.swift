@@ -8,11 +8,33 @@ final class TransactionsViewModel: ObservableObject {
     @Published var sortType: SortType = .dateDescending
     @Published var error: Error?
 
-    let transactionsService = TransactionsService()
+    let service: TransactionsService
     
-//    init(transactionsService: TransactionsService) {
-//        self.transactionsService = transactionsService
-//    }
+    init(service: TransactionsService) {
+        self.service = service
+    }
+    
+    // MARK: - Метод для загрузки транзакций из сервиса по доходу/расходу
+    func loadTransactions(accountId: Int, from start: Date, until end: Date) async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let iso = ISO8601DateFormatter()
+            iso.formatOptions = [.withYear, .withMonth, .withDay]
+            
+            let raw = try await service
+                .getTransactionsByPeriod(
+                    accountId: accountId,
+                    startDate: start,
+                    endDate: end
+                )
+            self.transactions = raw
+        } catch {
+            print("DECODE ERROR:", error)
+            self.error = error
+        }
+    }
     
     // MARK: - Метод для фильтрации транзакций по доходу/расходу
     func getTransactions(by direction: Direction, from start: Date, until end: Date, sortedBy type: SortType) -> [Transaction] {
@@ -27,12 +49,12 @@ final class TransactionsViewModel: ObservableObject {
         ) else {
             return []
         }
-        let filtered = self.transactions.filter
-            {
-                $0.category.direction == direction &&
-                $0.transactionDate >= startDate &&
-                $0.transactionDate <= end
-            }
+        let filtered = self.transactions.filter { transaction in
+            let date = calendar.startOfDay(for: transaction.transactionDate)
+            return transaction.category.direction == direction &&
+                   date >= startDate &&
+                   date <= end
+        }
         
         return sort(transactions: filtered, by: type)
     }
@@ -65,28 +87,4 @@ final class TransactionsViewModel: ObservableObject {
         return "\(amount) ₽"
     }
     
-    func loadTransactions(accountId: Int, from start: Date, until end: Date) async {
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            let iso = ISO8601DateFormatter()
-            iso.formatOptions = [.withYear, .withMonth, .withDay]
-            let startString = iso.string(from: start)
-            let endString   = iso.string(from: end)
-            
-            let raw = try await transactionsService
-                .getTransactionsByPeriod(
-                    accountId: accountId,
-                    startDate: startString,
-                    endDate: endString
-                )
-            // now you have the freshly fetched array…
-            // you can either store it directly:
-            self.transactions = raw
-            // …or post-process it with your sync filter/sort helpers:
-            // self.transactions = sort(transactions: raw, by: sortType)
-        } catch {
-            self.error = error
-        }
-    }
 }

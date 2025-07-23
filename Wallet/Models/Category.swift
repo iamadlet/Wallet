@@ -50,7 +50,11 @@ struct Category: Codable, Equatable, Identifiable, FuzzySearchable, Hashable {
 }
 
 
-enum Direction: Codable {
+enum Direction: String, CaseIterable, Identifiable {
     case income
     case outcome
+    
+    var id: String {
+        rawValue
+    }
 }

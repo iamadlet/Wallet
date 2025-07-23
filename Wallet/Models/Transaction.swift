@@ -6,7 +6,7 @@ struct Transaction: Identifiable, Codable {
     let category: Category
     let amount: Decimal
     let transactionDate: Date
-    let comment: String?
+    let comment: String
     let createdAt: Date
     let updatedAt: Date
     
@@ -21,13 +21,13 @@ struct Transaction: Identifiable, Codable {
         self.updatedAt = updatedAt
     }
     
-    init(from decoder: any Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(Int.self, forKey: .id)
         self.account = try container.decode(AccountBrief.self, forKey: .account)
         self.category = try container.decode(Category.self, forKey: .category)
         let amountString = try container.decode(String.self, forKey: .amount)
-        guard let amount = Decimal(string: amountString) else {
+        guard let amount = Decimal(string: amountString.replacingOccurrences(of: ",", with: ".")) else {
             throw DecodingError.dataCorruptedError(forKey: .amount, in: container, debugDescription: "Invalid decimal string")
         }
         self.amount = amount

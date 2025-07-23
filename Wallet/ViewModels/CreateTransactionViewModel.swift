@@ -1,7 +1,12 @@
 import Foundation
 
 @MainActor
-class CreateTransactionViewModel: ObservableObject {
+final class CreateTransactionViewModel: ObservableObject {
+    private let accountId: Int
+    private let accountService: BankAccountsService
+    private let transactionService: TransactionsService
+    private let categoriesService: CategoriesService
+    
     private(set) var existingTransaction: Transaction?
     
     @Published var categories: [Category] = []
@@ -10,55 +15,48 @@ class CreateTransactionViewModel: ObservableObject {
     @Published var date: Date = Date()
     @Published var time: Date = Date()
     @Published var comment: String = ""
-    @Published var transactionId: Int?
     @Published var isLoading: Bool = false
     @Published var error: Error?
     
-    private let accountId: Int
-    
-    private let accountService: BankAccountsService
-    private let transactionService: TransactionsService
-    private let categoriesService: CategoriesService
-    
     init(
+        accountId: Int,
         accountService: BankAccountsService,
         transactionService: TransactionsService,
         categoriesService: CategoriesService,
-        existing: Transaction?
+        existing: Transaction? = nil
     ) {
+        self.accountId = accountId
         self.accountService = accountService
         self.transactionService = transactionService
         self.categoriesService = categoriesService
-        self.accountId = transactionService.accounts[0].id
         self.existingTransaction = existing
         
         if let tx = existing {
-            let fmt = NumberFormatter()
-            fmt.numberStyle = .decimal
-            fmt.maximumFractionDigits = 2
-            fmt.locale = Locale.current
-            self.amount = fmt.string(
-                from: NSDecimalNumber(decimal: tx.amount)
-            ) ?? "0.00"
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = 2
+            formatter.locale = .current
+            
+            self.amount = formatter.string(from: NSDecimalNumber(decimal: tx.amount)) ?? ""
             self.date = tx.transactionDate
             self.time = tx.transactionDate
-            self.comment = tx.comment ?? ""
-            self.category = tx.category
-            self.transactionId = tx.id
+            self.comment = tx.comment
         }
     }
     
     // MARK: - Методы связанные с категориями
     // MARK: - Асинхронный метод для загрузки категорий
-    func loadCategories(of direction: Direction) async throws {
+    func loadCategories(of direction: Direction) async {
         do {
-            categories = try await categoriesService.getCategories(of: direction)
-            if category == nil {
-                category = categories.first
+            self.categories = try await categoriesService.getCategories(of: direction)
+            if let existing = existingTransaction {
+              self.category = categories.first { $0.id == existing.category.id }
+            }
+            if self.category == nil {
+              self.category = categories.first
             }
         } catch {
             self.error = error
-            print("не удалось загрузить категории", error)
         }
     }
     
@@ -67,49 +65,41 @@ class CreateTransactionViewModel: ObservableObject {
         category.id
     }
     
-    func createTransactionRequest() async throws -> TransactionRequest {
-        let calendar = Calendar.current
-        
-        let timeComponents = calendar.dateComponents([.hour, .minute], from: self.time)
-        
-        guard let transactionDate = calendar.date(bySettingHour: timeComponents.hour ?? 0, minute: timeComponents.minute ?? 0, second: 0, of: self.date) else {
-            throw TransactionRequestError.invalidDate
-        }
-        
-        guard let unwrappedCategoryId = category?.id else {
+    private func buildTransactionRequest() throws -> TransactionRequest {
+        guard let categoryId = category?.id else {
             throw TransactionRequestError.invalidCategory
         }
-        guard let amountNumber = Decimal(string: amount) else {
+        
+        let raw = amount.trimmingCharacters(in: .whitespaces)
+        guard let amountDecimal = Decimal(string: raw), amountDecimal > 0 else {
             throw TransactionRequestError.invalidAmount
         }
         
-        let transactionRequest = TransactionRequest(accountId: accountId, categoryId: unwrappedCategoryId, amount: amountNumber, transactionDate: transactionDate, comment: comment)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: time)
+        guard let finalDate = calendar.date(bySettingHour: components.hour ?? 0, minute: components.minute ?? 0, second: 0, of: date) else {
+            throw TransactionRequestError.invalidDate
+        }
         
-        return transactionRequest
+        return TransactionRequest(
+            accountId: accountId,
+            categoryId: categoryId,
+            amount: amountDecimal,
+            transactionDate: finalDate,
+            comment: comment
+        )
     }
     
-    func saveTransaction() async throws -> Bool {
+    func saveTransaction() async -> Bool {
         do {
-            let validatedAmount = try validateAmount()
-            let validatedTransactionDate = try makeTransactionDate()
-            let validatedCategoryId = try validateCategory()
+            let request = try buildTransactionRequest()
             
             if let existing = existingTransaction {
-                let transactionDate = try makeTransactionDate()
-                
-                try await transactionService.editTransaction(
-                    id: existing.id,
-                    accountId: accountId,
-                    categoryId: validatedCategoryId,
-                    amount: validatedAmount,
-                    transactionDate: validatedTransactionDate,
-                    comment: self.comment,
-                    createdAt: existing.createdAt
-                )
+                try await transactionService.editTransaction(id: existing.id, request: request)
             } else {
-                let newTransaction = try await transactionService.createTransaction(from: createTransactionRequest())
-                transactionService.transactions.append(newTransaction)
+                let response = try await transactionService.createTransaction(from: request)
             }
+            self.error = nil
             return true
         } catch {
             self.error = error
@@ -118,63 +108,12 @@ class CreateTransactionViewModel: ObservableObject {
     }
     
     func deleteTransaction(_ tx: Transaction) async throws {
-        guard let existing = existingTransaction else {
-            return
-        }
-        try await transactionService.deleteTransaction(by: existing.id)
+        guard let tx = existingTransaction else { return }
+        try await transactionService.deleteTransaction(by: tx.id)
     }
     
     func isEditing() -> Bool {
-        guard let existing = existingTransaction else {
-            return false
-        }
-        return true
-    }
-    
-    func getTransaction() async throws -> Transaction {
-        if let existing = existingTransaction {
-            return existing
-        } else {
-            throw TransactionRequestError.failedToSaveTransaction
-        }
-    }
-    
-    func makeTransactionDate() throws -> Date {
-        let calendar = Calendar.current
-        
-        let dayStart = calendar.startOfDay(for: self.date)
-        let comps = calendar.dateComponents([.hour, .minute], from: self.time)
-        
-        guard let transactionDate = calendar.date(
-            byAdding: comps,
-            to: dayStart
-        ) else {
-            throw TransactionRequestError.invalidDate
-        }
-        return transactionDate
-    }
-    
-    private func validateAmount() throws -> Decimal {
-        let raw = amount.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !raw.isEmpty else {
-            throw TransactionRequestError.invalidAmount
-        }
-        
-        let fmt = NumberFormatter()
-        fmt.numberStyle = .decimal
-        fmt.locale = Locale.current
-        
-        guard let num = fmt.number(from: self.amount)?.decimalValue, num > 0 else {
-            throw TransactionRequestError.invalidAmount
-        }
-        return num
-    }
-    
-    private func validateCategory() throws -> Int {
-        guard let c = category else {
-            throw TransactionRequestError.invalidCategory
-        }
-        return c.id
+        existingTransaction != nil
     }
 }
 
@@ -187,12 +126,23 @@ enum TransactionRequestError: Error {
     case failedToDeleteTransaction
 }
 
-enum TransactionSheetState: Identifiable {
-    case create, edit(Transaction)
+enum TransactionSheetState: Identifiable, Equatable {
+    case create(UUID), edit(Transaction)
     var id: String {
         switch self {
-        case .create: return "create"
+        case .create(let uuid): return uuid.uuidString
         case .edit(let transaction): return transaction.id.description
+        }
+    }
+    
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.create(let a), .create(let b)):
+            return a == b
+        case (.edit(let a), .edit(let b)):
+            return a.id == b.id
+        default:
+            return false
         }
     }
 }
