@@ -22,122 +22,99 @@ struct HistoryView: View {
     @State private var popoverState: TransactionSheetState?
     
     var body: some View {
-            List {
-                Section{
-                    startSection
+        List {
+            Section{
+                startSection
+                
+                endSection
+                
+                HStack {
+                    Text("Сумма")
                     
-                    endSection
+                    Spacer()
                     
-                    HStack {
-                        Text("Сумма")
-                        
-                        Spacer()
-                        
-                        let total = model.sumTransactionsAmount(by: direction, from: startDate, until: endDate)
-                        let formatted = model.formatAmount(total)
-
-                        Text(formatted)
-                    }
+                    let total = model.sumTransactionsAmount(by: direction, from: startDate, until: endDate)
+                    let formatted = model.formatAmount(total)
                     
-                    //MARK: - Выбор сортировки
-                    Picker("Сортировка", selection: $model.sortType) {
-                        ForEach(SortType.allCases, id: \.self) { type in
-                            Text(type.rawValue)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .tag(type)
-                        }
-                    }
+                    Text(formatted)
                 }
                 
-                transactionSection
-                
-            }
-            .popover(item: $popoverState) { state in
-                let transactionToEdit: Transaction? = {
-                    switch state {
-                    case .create: return nil
-                    case .edit(let transaction): return transaction
+                //MARK: - Выбор сортировки
+                Picker("Сортировка", selection: $model.sortType) {
+                    ForEach(SortType.allCases, id: \.self) { type in
+                        Text(type.rawValue)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .tag(type)
                     }
-                }()
-                if let accountId = bankVM.accountId {
-                    let childVM = CreateTransactionViewModel(
-                        accountId: accountId,
-                        accountService: deps.bankService,
-                        transactionService: deps.transactionService,
-                        categoriesService: deps.categoriesService,
-                        existing: transactionToEdit
-                    )
-
-                    CreateTransactionView(direction: direction)
-                        .environmentObject(childVM)
+                }
+            }
+            
+            if model.isLoading {
+                ProgressView()
+            } else {
+                transactionSection
+            }
+            
+        }
+        .popover(item: $popoverState) { state in
+            let transactionToEdit: Transaction? = {
+                switch state {
+                case .create(_): return nil
+                case .edit(let transaction): return transaction
+                }
+            }()
+            if let accountId = bankVM.accountId {
+                let childVM = CreateTransactionViewModel(
+                    accountId: accountId,
+                    accountService: deps.bankService,
+                    transactionService: deps.transactionService,
+                    categoriesService: deps.categoriesService,
+                    existing: transactionToEdit
+                )
+                
+                CreateTransactionView(
+                    direction: direction,
+                    popoverState: $popoverState
+                )
+                    .environmentObject(childVM)
                     .onDisappear {
                         Task {
                             if let accountId = bankVM.accountId {
                                 await model.loadTransactions(
                                     accountId: accountId,
-                                    from: model.today,
-                                    until: model.today
+                                    from: startDate,
+                                    until: endDate
                                 )
                             }
                         }
                     }
+            }
+        }
+        .navigationTitle("Моя история")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showAnalysis = true }) {
+                    Image(systemName: "chart.pie")
                 }
             }
-            .navigationTitle("Моя история")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showAnalysis = true }) {
-                        Image(systemName: "chart.pie")
-                    }
-                }
+        }
+        .task(id: "\(startDate)-\(endDate)-\(bankVM.accountId ?? -1)") {
+            if let accountId = bankVM.accountId {
+                await model.loadTransactions(
+                    accountId: accountId,
+                    from: startDate,
+                    until: endDate
+                )
             }
-            .task {
-                if let accountId = bankVM.accountId {
-                    await model.loadTransactions(
-                        accountId: accountId,
-                        from: startDate,
-                        until: endDate
-                    )
-                }
+        }
+        .background(
+            NavigationLink(destination: AnalysisView(direction: direction), isActive: $showAnalysis) {
+                EmptyView()
             }
-            .onChange(of: startDate) { _, _ in
-                Task {
-                    if let accountId = bankVM.accountId {
-                        await model.loadTransactions(
-                            accountId: accountId,
-                            from: startDate,
-                            until: endDate
-                        )
-                    }
-                }
-            }
-            .onChange(of: endDate)   { _, _ in
-                Task {
-                    if let accountId = bankVM.accountId {
-                        await model.loadTransactions(
-                            accountId: accountId,
-                            from: startDate,
-                            until: endDate
-                        )
-                    }
-                }
-            }
-            .onChange(of: bankVM.accountId) { newId in
-                guard let id = newId else { return }
-                Task {
-                    await model.loadTransactions(accountId: id,
-                                                 from: model.today,
-                                                 until: model.today)
-                }
-            }
-            .background(
-                NavigationLink(destination: AnalysisView(direction: direction), isActive: $showAnalysis) {
-                    EmptyView()
-                }
                 .hidden()
-            )
+        )
     }
     
     var transactionSection: some View {
@@ -152,6 +129,13 @@ struct HistoryView: View {
                 isShowingTransactionTime: false,
                 popoverState: $popoverState
             )
+//            .task {
+//                if let accountId = bankVM.accountId {
+//                    await model.loadTransactions(accountId: accountId,
+//                                                 from: startDate,
+//                                                 until: endDate)
+//                }
+//            }
         }
     }
     
@@ -186,7 +170,7 @@ struct HistoryView: View {
     let deps = AppDependencies(token: "тест")
     let model = TransactionsViewModel(service: deps.transactionService)
     let bankVM = BankAccountViewModel(service: deps.bankService)
-
+    
     
     HistoryView(direction: .outcome)
         .environmentObject(model)

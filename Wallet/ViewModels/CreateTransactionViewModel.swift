@@ -49,8 +49,11 @@ final class CreateTransactionViewModel: ObservableObject {
     func loadCategories(of direction: Direction) async {
         do {
             self.categories = try await categoriesService.getCategories(of: direction)
-            if category == nil {
-                category = categories.first
+            if let existing = existingTransaction {
+              self.category = categories.first { $0.id == existing.category.id }
+            }
+            if self.category == nil {
+              self.category = categories.first
             }
         } catch {
             self.error = error
@@ -90,12 +93,13 @@ final class CreateTransactionViewModel: ObservableObject {
     func saveTransaction() async -> Bool {
         do {
             let request = try buildTransactionRequest()
-
+            
             if let existing = existingTransaction {
                 try await transactionService.editTransaction(id: existing.id, request: request)
             } else {
-                _ = try await transactionService.createTransaction(from: request)
+                let response = try await transactionService.createTransaction(from: request)
             }
+            self.error = nil
             return true
         } catch {
             self.error = error
@@ -122,12 +126,23 @@ enum TransactionRequestError: Error {
     case failedToDeleteTransaction
 }
 
-enum TransactionSheetState: Identifiable {
-    case create, edit(Transaction)
+enum TransactionSheetState: Identifiable, Equatable {
+    case create(UUID), edit(Transaction)
     var id: String {
         switch self {
-        case .create: return "create"
+        case .create(let uuid): return uuid.uuidString
         case .edit(let transaction): return transaction.id.description
+        }
+    }
+    
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.create(let a), .create(let b)):
+            return a == b
+        case (.edit(let a), .edit(let b)):
+            return a.id == b.id
+        default:
+            return false
         }
     }
 }

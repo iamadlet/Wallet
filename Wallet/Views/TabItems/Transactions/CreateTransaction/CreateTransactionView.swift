@@ -4,8 +4,8 @@ struct CreateTransactionView: View {
     let direction: Direction
     @EnvironmentObject var viewModel: CreateTransactionViewModel
     
-    @Environment(\.dismiss) private var dismiss
     @State private var showAlert: Bool = false
+    @Binding var popoverState: TransactionSheetState?
     
     var body: some View {
         NavigationStack {
@@ -14,7 +14,7 @@ struct CreateTransactionView: View {
                     Picker("Статья", selection: $viewModel.category) {
                         ForEach(viewModel.categories) { category in
                             Text(category.name)
-                                .tag(category)
+                                .tag(category as Category?)
                         }
                     }
                     HStack {
@@ -43,7 +43,7 @@ struct CreateTransactionView: View {
                 
                 if viewModel.isEditing() {
                     Button {
-                        dismiss()
+                        popoverState = nil
                         Task {
                             if let transaction = viewModel.existingTransaction {
                                 try await viewModel.deleteTransaction(transaction)
@@ -56,41 +56,39 @@ struct CreateTransactionView: View {
                 }
 
             }
+            .task {
+                await viewModel.loadCategories(of: direction)
+            }
             .navigationTitle(direction == .outcome ? "Мои расходы" : "Мои доходы")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Отменить") {
-                        dismiss()
+                        popoverState = nil
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button((viewModel.existingTransaction != nil) ? "Сохранить" : "Создать") {
+                        showAlert = false
                         Task {
-                            do {
-                                let validated = try await viewModel.saveTransaction()
-                                if validated {
-                                    dismiss()
-                                } else {
-                                    showAlert = true
-                                }
-                            } catch {
-                                print("не удалось сохранить транзакцию:", viewModel.error)
+                            let success = await viewModel.saveTransaction()
+                            if success {
+                                popoverState = nil
+                            } else {
                                 showAlert = true
                             }
                         }
                     }
                 }
             }
-            .onAppear {
-                Task {
-                    await viewModel.loadCategories(of: direction)
-                }
-            }
+        }
+        .onAppear {
+            showAlert = false
+            viewModel.error = nil
         }
         .alert("Ошибка", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Заполните все поля")
+            Text("Заполните все поля, \(viewModel.error?.localizedDescription ?? "Неизвестная ошибка")")
         }
     }
 }
@@ -120,7 +118,7 @@ struct CreateTransactionView: View {
         existing: transaction
     )
     
-    CreateTransactionView(direction: .outcome)
+    CreateTransactionView(direction: .outcome, popoverState: .constant(.create(UUID())))
         .environmentObject(viewModel)
 }
 

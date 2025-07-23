@@ -30,8 +30,8 @@ final class TransactionsViewModel: ObservableObject {
                     endDate: end
                 )
             self.transactions = raw
-            print("Transactions: ", self.transactions)
         } catch {
+            print("DECODE ERROR:", error)
             self.error = error
         }
     }

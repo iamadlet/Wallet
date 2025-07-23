@@ -37,7 +37,9 @@ final class NetworkClient {
 
         if !(body is EmptyBody) {
             do {
-                request.httpBody = try JSONEncoder().encode(body)
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .iso8601
+                request.httpBody = try encoder.encode(body)
             } catch {
                 throw NetworkError.encodingError(error)
             }
@@ -69,7 +71,7 @@ final class NetworkClient {
         print("📥 Ответ:", String(data: data, encoding: .utf8) ?? "нельзя декодировать")
 
         do {
-            return try JSONDecoder.withISO8601().decode(ResponseBody.self, from: data)
+            return try JSONDecoder.withFlexibleISO8601().decode(ResponseBody.self, from: data)
         } catch {
             throw NetworkError.decodingError(error)
         }
@@ -77,22 +79,26 @@ final class NetworkClient {
 }
 
 private extension JSONDecoder {
-    static func withISO8601() -> JSONDecoder {
+    static func withFlexibleISO8601() -> JSONDecoder {
         let decoder = JSONDecoder()
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let fracFormatter = ISO8601DateFormatter()
+        fracFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let baseFormatter = ISO8601DateFormatter()
+        baseFormatter.formatOptions = [.withInternetDateTime]
+        
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateStr = try container.decode(String.self)
-
-            if let date = formatter.date(from: dateStr) {
+            if let date = fracFormatter.date(from: dateStr) {
                 return date
-            } else {
-                throw DecodingError.dataCorruptedError(
-                    in: container,
-                    debugDescription: "Invalid date format: \(dateStr)"
-                )
             }
+            if let date = baseFormatter.date(from: dateStr) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid date format: \(dateStr)"
+            )
         }
         return decoder
     }

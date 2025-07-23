@@ -8,6 +8,7 @@ struct TransactionsListView: View {
     var direction: Direction
     @State private var isShowingAddTransactionView: Bool = false
     @State private var popoverState: TransactionSheetState?
+    @StateObject private var createTxVMHolder = CreateTxVMHolder()
     
     var body: some View {
         NavigationStack {
@@ -42,64 +43,6 @@ struct TransactionsListView: View {
                         popoverState: $popoverState)
                 }
             }
-            .refreshable {
-                if let accountId = bankVM.accountId {
-                    await model.loadTransactions(
-                        accountId: accountId,
-                        from: model.today,
-                        until: model.today
-                    )
-                }
-            }
-            .listStyle(.insetGrouped)
-            .overlay(
-                Button {
-                    popoverState = .create
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(width: 56, height: 56)
-                        .background(Color.accentColor)
-                        .clipShape(Circle())
-                        .shadow(radius: 4)
-                }
-                .padding(.trailing, 16)
-                .padding(.bottom, 20)
-                , alignment: .bottomTrailing
-            )
-            .popover(item: $popoverState) { state in
-                let transactionToEdit: Transaction? = {
-                    switch state {
-                    case .create: return nil
-                    case .edit(let transaction): return transaction
-                    }
-                }()
-                if let accountId = bankVM.accountId {
-                    let childVM = CreateTransactionViewModel(
-                        accountId: accountId,
-                        accountService: deps.bankService,
-                        transactionService: deps.transactionService,
-                        categoriesService: deps.categoriesService,
-                        existing: transactionToEdit
-                    )
-
-                    CreateTransactionView(direction: direction)
-                        .environmentObject(childVM)
-                    .onDisappear {
-                        Task {
-                            if let accountId = bankVM.accountId {
-                                await model.loadTransactions(
-                                    accountId: accountId,
-                                    from: model.today,
-                                    until: model.today
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle(direction == .income ? "Доходы сегодня": "Расходы сегодня")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
@@ -112,14 +55,45 @@ struct TransactionsListView: View {
                     }
                 }
             }
-            .onChange(of: bankVM.accountId) { newId in
-                guard let id = newId else { return }
+            .onAppear {
                 Task {
-                    await model.loadTransactions(accountId: id,
-                                                 from: model.today,
-                                                 until: model.today)
+                    if let accountId = bankVM.accountId {
+                        await model.loadTransactions(
+                            accountId: accountId,
+                            from: model.today,
+                            until: model.today
+                        )
+                    }
                 }
             }
+            .refreshable {
+                if let accountId = bankVM.accountId {
+                    await model.loadTransactions(
+                        accountId: accountId,
+                        from: model.today,
+                        until: model.today
+                    )
+                }
+            }
+            
+            .listStyle(.insetGrouped)
+            .overlay(
+                Button {
+                    popoverState = .create(UUID())
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 56, height: 56)
+                        .background(Color.accentColor)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 20)
+                , alignment: .bottomTrailing
+            )
+            .navigationTitle(direction == .income ? "Доходы сегодня": "Расходы сегодня")
             .task {
                 if let accountId = bankVM.accountId {
                     await model.loadTransactions(
@@ -130,7 +104,51 @@ struct TransactionsListView: View {
                 }
             }
         }
+        .onChange(of: popoverState) { state in
+               guard let state = state,
+                     createTxVMHolder.vm == nil,
+                     let accountId = bankVM.accountId
+               else { return }
+    
+               let txToEdit: Transaction? = {
+                   switch state {
+                   case .create(_): return nil
+                   case .edit(let tx): return tx
+                   }
+               }()
+               createTxVMHolder.vm = CreateTransactionViewModel(
+                   accountId: accountId,
+                   accountService: deps.bankService,
+                   transactionService: deps.transactionService,
+                   categoriesService: deps.categoriesService,
+                   existing: txToEdit
+               )
+           }
+        .popover(item: $popoverState) { state in
+            if let vm = createTxVMHolder.vm {
+                CreateTransactionView(
+                    direction: direction,
+                    popoverState: $popoverState
+                )
+                .environmentObject(vm)
+                .onDisappear {
+                    createTxVMHolder.vm = nil
+                    Task {
+                        await model.loadTransactions(
+                                accountId: bankVM.accountId!,
+                                from: model.today,
+                                until: model.today
+                            )
+                    }
+                }
+            }
+        }
     }
+}
+
+@MainActor
+private class CreateTxVMHolder: ObservableObject {
+    @Published var vm: CreateTransactionViewModel?
 }
 
 #Preview {

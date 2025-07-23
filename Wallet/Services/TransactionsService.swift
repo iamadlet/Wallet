@@ -25,7 +25,7 @@ final class TransactionsService: ObservableObject {
         )
     }
     //MARK: - Aсинхронный метод для создания транзакции
-    func createTransaction(from request: TransactionRequest) async throws -> Transaction {
+    func createTransaction(from request: TransactionRequest) async throws -> TransactionResponse {
         return try await client.request(
             path: "transactions",
             method: "POST",
