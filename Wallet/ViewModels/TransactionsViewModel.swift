@@ -68,6 +68,27 @@ final class TransactionsViewModel: ObservableObject {
         return sum
     }
     
+    // MARK: - Для графика в BankAccountView
+    func getSumsForOneMonth(from start: Date) -> [Date: Decimal] {
+        let calendar = Calendar.current
+        let startDay = calendar.startOfDay(for: start)
+        
+        var sumsByDay: [Date: Decimal] = [:]
+        for offset in 0..<30 {
+            let day = calendar.date(byAdding: .day, value: offset, to: startDay)!
+            sumsByDay[day] = 0
+        }
+        
+        for tx in transactions {
+            let day = calendar.startOfDay(for: tx.transactionDate)
+            guard sumsByDay[day] != nil else { continue }
+            let sign: Decimal = (tx.category.direction == .income) ? 1 : -1
+            sumsByDay[day]! += sign * tx.amount
+        }
+        
+        return sumsByDay
+    }
+    
     func sort(transactions: [Transaction],by type: SortType) -> [Transaction] {
         switch type {
         case .dateAscending:

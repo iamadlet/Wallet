@@ -94,7 +94,7 @@ struct CreateTransactionView: View {
 }
 
 #Preview {
-    let deps = AppDependencies(token: "твой_токен")
+    let deps = AppDependencies(token: "токен")
     
     let account = AccountBrief(id: 1, name: "Основной счёт", balance: 1000, currency: "RUB")
     let category = Category(id: 1, name: "Еда", emoji: "🍎", isIncome: false)
