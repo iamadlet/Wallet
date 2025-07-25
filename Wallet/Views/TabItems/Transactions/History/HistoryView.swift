@@ -20,6 +20,7 @@ struct HistoryView: View {
     @State private var showEditTransaction: Bool = false
     @State private var selectedTx: Transaction?
     @State private var popoverState: TransactionSheetState?
+    @StateObject private var createTxVMHolder = CreateTxVMHolder()
     
     var body: some View {
         List {
@@ -57,38 +58,55 @@ struct HistoryView: View {
             }
             
         }
-        .popover(item: $popoverState) { state in
-            let transactionToEdit: Transaction? = {
+        .onChange(of: popoverState) { state in
+            guard let state = state,
+                  createTxVMHolder.vm == nil,
+                  let accountId = bankVM.accountId
+            else { return }
+            
+            let txToEdit: Transaction? = {
                 switch state {
                 case .create(_): return nil
-                case .edit(let transaction): return transaction
+                case .edit(let tx): return tx
                 }
             }()
-            if let accountId = bankVM.accountId {
-                let childVM = CreateTransactionViewModel(
-                    accountId: accountId,
-                    accountService: deps.bankService,
-                    transactionService: deps.transactionService,
-                    categoriesService: deps.categoriesService,
-                    existing: transactionToEdit
-                )
-                
+            let vm = CreateTransactionViewModel(
+                accountId: accountId,
+                accountService: deps.bankService,
+                transactionService: deps.transactionService,
+                categoriesService: deps.categoriesService,
+                existing: txToEdit
+            )
+            createTxVMHolder.vm = vm
+            Task {
+                await vm.loadCategories(of: direction)
+                if let existing = txToEdit {
+                    vm.category = vm.categories.first {
+                        $0.id == existing.category.id
+                    }
+                }
+            }
+        }
+        .popover(item: $popoverState) { _ in
+            if let vm = createTxVMHolder.vm {
                 CreateTransactionView(
                     direction: direction,
                     popoverState: $popoverState
                 )
-                    .environmentObject(childVM)
-                    .onDisappear {
-                        Task {
-                            if let accountId = bankVM.accountId {
-                                await model.loadTransactions(
-                                    accountId: accountId,
-                                    from: startDate,
-                                    until: endDate
-                                )
-                            }
+                .environmentObject(vm)
+                .onDisappear {
+                    // clear the VM so next time we'll recreate
+                    createTxVMHolder.vm = nil
+                    Task {
+                        if let accountId = bankVM.accountId {
+                            await model.loadTransactions(
+                                accountId: accountId,
+                                from: startDate,
+                                until: endDate
+                            )
                         }
                     }
+                }
             }
         }
         .navigationTitle("Моя история")
@@ -129,13 +147,6 @@ struct HistoryView: View {
                 isShowingTransactionTime: false,
                 popoverState: $popoverState
             )
-//            .task {
-//                if let accountId = bankVM.accountId {
-//                    await model.loadTransactions(accountId: accountId,
-//                                                 from: startDate,
-//                                                 until: endDate)
-//                }
-//            }
         }
     }
     
@@ -164,6 +175,11 @@ struct HistoryView: View {
                 }
         }
     }
+}
+
+@MainActor
+private class CreateTxVMHolder: ObservableObject {
+    @Published var vm: CreateTransactionViewModel?
 }
 
 #Preview {
